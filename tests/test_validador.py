@@ -1,7 +1,7 @@
 """Contrato de aceptación del validador.
 
 Lo que se comprueba aquí está escrito en `fixtures/README.md` del vault. Si un
-cambio rompe un test de estos, el cambio está mal (CLAUDE.md § Fixtures).
+cambio rompe un test de estos, el cambio está mal (Instrucciones § Fixtures).
 """
 
 from __future__ import annotations

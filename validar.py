@@ -7,7 +7,7 @@
     python validar.py <ruta> --schema     cruza ademas con esquema/dia.schema.json
 
 Sale con codigo 1 si hay errores. Los avisos no hacen fallar nada: avisar de un
-campo ausente no es lo mismo que rechazar la entrada (principio 3 de CLAUDE.md).
+campo ausente no es lo mismo que rechazar la entrada (principio 3 de Instrucciones).
 """
 
 from __future__ import annotations

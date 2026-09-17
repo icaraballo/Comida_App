@@ -1,6 +1,6 @@
 """Lo que el validador reporta.
 
-Dos niveles y la diferencia entre ellos es el principio 3 de CLAUDE.md:
+Dos niveles y la diferencia entre ellos es el principio 3 de Instrucciones:
 
 - ERROR: el dato esta roto o no se puede interpretar. Hay que tocar el .md.
 - AVISO: el dato es valido pero falta algo o hay una ambiguedad. Se puede vivir

@@ -24,7 +24,7 @@ RE_HORA = re.compile(r"^(\d{1,2}):(\d{2})$")
 # avisa: un encabezado mal escrito hace que el parser pierda ese texto en silencio.
 SECCIONES = ("Reflexiones", "Pensamientos predominantes", "Orgullo y gratitud")
 
-# Lo que necesitan Q1-Q4 de docs/analisis.md. Su ausencia se avisa agrupada, no
+# Lo que necesitan Q1-Q4 de Diseño/Analisis.md. Su ausencia se avisa agrupada, no
 # campo a campo: ocho avisos por ingesta serian ruido y el ruido se ignora.
 CAMPOS_ANALISIS = ("hambre_antes", "emociones_antes", "emociones_despues", "energia")
 CAMPOS_DIA_UTILES = ("sueno_horas", "sueno_calidad", "agua_litros")
@@ -123,7 +123,7 @@ def _revisar_dia(acta: _Acta, campos: dict, fecha_fichero: str | None) -> None:
     if ausentes and lista:
         acta.aviso(1, "campos_dia_ausentes",
                    "el dia no registra " + ", ".join(f"`{c}`" for c in ausentes),
-                   "el sueno es el principal factor de confusion de la ansiedad (docs/esquema.md)")
+                   "el sueno es el principal factor de confusion de la ansiedad (Diseño/Esquema-de-Datos.md)")
 
 
 def _revisar_fecha(acta: _Acta, par, fecha_fichero: str | None) -> None:

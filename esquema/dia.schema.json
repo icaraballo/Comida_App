@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "comida-app/esquema/dia.schema.json",
   "title": "Dia de registro",
-  "description": "Contrato del frontmatter de diario/YYYY-MM-DD.md. Derivado de docs/esquema.md del vault; cualquier cambio aqui va despues del cambio en ese documento. Los vocabularios de $defs son la unica fuente de las listas cerradas en codigo: validador/ los lee de aqui.",
+  "description": "Contrato del frontmatter de diario/YYYY-MM-DD.md. Derivado de Diseño/Esquema-de-Datos.md del vault; cualquier cambio aqui va despues del cambio en ese documento. Los vocabularios de $defs son la unica fuente de las listas cerradas en codigo: validador/ los lee de aqui.",
   "type": "object",
   "required": ["fecha"],
   "additionalProperties": false,
