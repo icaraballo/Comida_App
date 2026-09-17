@@ -1,0 +1,14 @@
+# Entorno
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Capa derivada: se regenera con el parser, nunca se versiona (D1)
+derivado/
+
+# Datos reales del registro: NUNCA en este repo (D9)
+diario/
+
+# macOS
+.DS_Store

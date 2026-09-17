@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "comida-app/esquema/dia.schema.json",
+  "title": "Dia de registro",
+  "description": "Contrato del frontmatter de diario/YYYY-MM-DD.md. Derivado de docs/esquema.md del vault; cualquier cambio aqui va despues del cambio en ese documento. Los vocabularios de $defs son la unica fuente de las listas cerradas en codigo: validador/ los lee de aqui.",
+  "type": "object",
+  "required": ["fecha"],
+  "additionalProperties": false,
+  "properties": {
+    "fecha": {
+      "description": "Debe coincidir con el nombre del fichero. Manda el nombre del fichero.",
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "agua_litros": { "type": "number", "minimum": 0 },
+    "actividad": { "type": "string" },
+    "sueno_horas": {
+      "description": "[ANADIDO] Principal factor de confusion de la ansiedad.",
+      "type": "number",
+      "minimum": 0,
+      "maximum": 24
+    },
+    "sueno_calidad": { "$ref": "#/$defs/calidad_sueno" },
+    "ingestas": {
+      "description": "Lista abierta 0..n (D3). Ausente o vacia es un dia valido.",
+      "type": ["array", "null"],
+      "items": { "$ref": "#/$defs/ingesta" }
+    }
+  },
+  "$defs": {
+    "ingesta": {
+      "type": "object",
+      "required": ["tipo", "hora", "alimentos"],
+      "additionalProperties": false,
+      "properties": {
+        "tipo": { "$ref": "#/$defs/tipo_ingesta" },
+        "hora": {
+          "description": "Entre comillas SIEMPRE: sin ellas YAML 1.1 lee 8:15 como el entero 495.",
+          "type": "string",
+          "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+        },
+        "alimentos": {
+          "description": "Texto libre. No categorizar en captura (D2).",
+          "type": "string"
+        },
+        "hambre_antes": { "$ref": "#/$defs/hambre" },
+        "emociones_antes": { "type": "array", "items": { "$ref": "#/$defs/emocion" } },
+        "pensamientos_antes": { "type": "string" },
+        "emociones_despues": { "type": "array", "items": { "$ref": "#/$defs/emocion" } },
+        "pensamientos_despues": { "type": "string" },
+        "energia": { "$ref": "#/$defs/energia" },
+        "sintomas": { "type": "array", "items": { "$ref": "#/$defs/sintoma" } },
+        "contexto": { "$ref": "#/$defs/contexto" },
+        "emocion_otra_antes": { "type": "string" },
+        "emocion_otra_despues": { "type": "string" },
+        "energia_otro": { "type": "string" },
+        "sintoma_otros": { "type": "string" }
+      }
+    },
+    "contexto": {
+      "description": "[ANADIDO] Parcial es valido.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "compania": { "$ref": "#/$defs/compania" },
+        "lugar": { "$ref": "#/$defs/lugar" },
+        "pantalla": { "type": "boolean" }
+      }
+    },
+    "emocion": {
+      "description": "Literal de la plantilla en papel.",
+      "enum": ["felicidad", "ansiedad", "tristeza", "rabia", "culpa", "miedo", "aburrimiento", "frustracion", "ninguna", "otra"]
+    },
+    "energia": {
+      "description": "Literal de la plantilla en papel.",
+      "enum": ["alta", "normal", "baja", "sueno", "apatia", "otro"]
+    },
+    "sintoma": {
+      "description": "Literal de la plantilla en papel.",
+      "enum": ["dolor", "hinchazon", "malestar", "mareo", "gases", "acidez", "otros"]
+    },
+    "tipo_ingesta": {
+      "description": "Los cinco primeros son literales de la plantilla; picoteo es [ANADIDO] (D3).",
+      "enum": ["desayuno", "media_manana", "comida", "merienda", "cena", "picoteo"]
+    },
+    "hambre": {
+      "description": "[ANADIDO] El campo que separa comer de comer por emocion.",
+      "enum": ["si", "algo", "no"]
+    },
+    "calidad_sueno": {
+      "description": "[ANADIDO]",
+      "enum": ["buena", "regular", "mala"]
+    },
+    "compania": { "enum": ["solo", "acompanado"] },
+    "lugar": { "enum": ["casa", "trabajo", "fuera"] }
+  }
+}

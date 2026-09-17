@@ -1,0 +1,8 @@
+# Lo mínimo para el esquema y el validador.
+PyYAML==6.0.3
+
+# Solo para `validar.py --schema` (contraste con el JSON Schema).
+jsonschema==4.26.0
+
+# Tests.
+pytest==9.1.1
