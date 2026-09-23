@@ -8,7 +8,7 @@ Empezar por `Comida App.md`. Este repo es sólo la implementación.
 
 | En el vault | Qué es |
 |---|---|
-| `Tareas/CA-Especificacion-App-Registro.md` | **La app de registro**: pantallas, datos, exportación, diseño y plan. Con su prototipo `CA-Prototipo-v0.4.html` |
+| `Diseño/CA-Especificacion-App-Registro.md` | **La app de registro**: pantallas, datos, exportación, diseño y plan. Con su prototipo `CA-Prototipo-v0.4.html` |
 | `Tareas/CA-Instrucciones.md` | Principios no negociables, qué **no** construir, cómo registrar y, al final, el **banco de ideas** (decisiones abiertas y pendientes) |
 | `Diseño/CA-Esquema-de-Datos.md` | **El contrato de datos.** Manda sobre el código |
 | `Diseño/CA-Decisiones.md` | Las doce decisiones (D1–D12), con su motivo |

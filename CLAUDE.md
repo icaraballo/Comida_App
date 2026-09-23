@@ -2,7 +2,7 @@
 
 **La documentación canónica vive en el vault**, no aquí:
 `../Vault Proyectos/Comida_App/`. Empezar por `Comida App.md`, y para la app
-de registro, por `Tareas/CA-Especificacion-App-Registro.md`.
+de registro, por `Diseño/CA-Especificacion-App-Registro.md`.
 
 Este fichero no duplica nada: sólo recuerda las reglas que no se pueden
 descubrir leyendo el código, y dice dónde está lo demás. Si algo de aquí choca
@@ -22,9 +22,10 @@ con `Tareas/CA-Instrucciones.md` del vault, **manda el vault**.
 4. **Captura y clasificación van separadas.** Los alimentos se registran en texto
    libre; el etiquetado es posterior y en batch.
 5. **El prototipo manda sobre el aspecto.** `app/` parte de
-   `CA-Prototipo-v0.4.html` (vault, `Tareas/`) y tiene que verse y comportarse
+   `CA-Prototipo-v0.4.html` (vault, `Diseño/`) y tiene que verse y comportarse
    igual. Si la especificación y el prototipo discrepan, preguntar. Los puntos
-   abiertos de su §11 no se deciden sin el usuario.
+   abiertos (banco de ideas de `CA-Instrucciones`, §4.1) no se deciden sin
+   el usuario.
 
 ## Qué NO construir
 
