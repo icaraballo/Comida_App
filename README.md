@@ -37,7 +37,9 @@ Obsidian queda sustituida por registrar con el prototipo (D10). `validar.py`,
 ## La app (`app/`)
 
 `app/index.html` es el prototipo v0.4, copiado sin cambios: un solo fichero, se
-abre en el navegador tal cual. Guarda en el `localStorage` del navegador, así que
+abre en el navegador tal cual. Publicado con GitHub Pages en
+https://icaraballo.github.io/Comida_App/app/ — el repo es público de momento para
+poder servirlo; no lleva datos reales. Guarda en el `localStorage` del navegador, así que
 cada móvil tiene sus propios datos y no salen de ahí salvo al exportar o guardar
 copia. Todavía carga las fuentes de Google Fonts y sólo descarga archivos dentro
 de Claude.ai (fuera, "copiar como texto"): las dos cosas se arreglan en la PWA.
