@@ -9,12 +9,10 @@ Empezar por `Comida App.md`. Este repo es sólo la implementación.
 | En el vault | Qué es |
 |---|---|
 | `Tareas/CA-Especificacion-App-Registro.md` | **La app de registro**: pantallas, datos, exportación, diseño y plan. Con su prototipo `CA-Prototipo-v0.4.html` |
-| `Tareas/CA-Instrucciones.md` | Principios no negociables y la lista de qué **no** construir |
-| `Tareas/CA-Fase-0-Obsidian.md` | Sustituida por el prototipo (D10); quedan sus cuatro preguntas |
+| `Tareas/CA-Instrucciones.md` | Principios no negociables, qué **no** construir, cómo registrar y, al final, el **banco de ideas** (decisiones abiertas y pendientes) |
 | `Diseño/CA-Esquema-de-Datos.md` | **El contrato de datos.** Manda sobre el código |
 | `Diseño/CA-Decisiones.md` | Las doce decisiones (D1–D12), con su motivo |
 | `Diseño/CA-Analisis.md` | Las cuatro preguntas pre-registradas (Q1–Q4) |
-| `Diseño/CA-Banco-de-Ideas.md` | Decisiones abiertas e ideas |
 | `QA/` | Bugs activos, sin verificar, resueltos y compatibilidad |
 | `fixtures/` | Contrato de aceptación del parser y del validador |
 
@@ -41,8 +39,9 @@ abre en el navegador tal cual. Publicado con GitHub Pages en
 https://icaraballo.github.io/Comida_App/app/ — el repo es público de momento para
 poder servirlo; no lleva datos reales. Guarda en el `localStorage` del navegador, así que
 cada móvil tiene sus propios datos y no salen de ahí salvo al exportar o guardar
-copia. Todavía carga las fuentes de Google Fonts y sólo descarga archivos dentro
-de Claude.ai (fuera, "copiar como texto"): las dos cosas se arreglan en la PWA.
+copia. Todavía carga las fuentes de Google Fonts (se arregla en la PWA). Para guardar
+archivos usa la función de Claude.ai si está dentro; fuera, en el móvil, la hoja
+de compartir del sistema y, si no, una descarga normal (`getDownloader()`).
 
 ## Uso
 
@@ -142,7 +141,7 @@ Las dos corrompen en silencio, sin dar error, y las dos están cubiertas:
 - `hambre_antes: no` sin comillas se lee como el **booleano `False`** (la lista
   de PyYAML incluye `yes`/`no`/`on`/`off`), y `no` es un valor del vocabulario
   `hambre`. Se deshace en `esquema.destrampar()`, en un único sitio.
-  **Decisión abierta**, ver `Diseño/CA-Banco-de-Ideas.md` §1.1.
+  **Decisión abierta**, ver el banco de ideas de `Tareas/CA-Instrucciones.md`, §1.1.
 
 ## Privacidad
 

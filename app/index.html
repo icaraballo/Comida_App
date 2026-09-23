@@ -587,8 +587,30 @@ function fillExport(){
   $('fmtHint').textContent=hints[expFmt];$('expTxt').value=exportText(expFmt);
   document.querySelectorAll('[data-fmt]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.fmt===expFmt)));
 }
+/* ---------- guardar archivos ----------
+   Dentro de Claude.ai, su función de descargas. Fuera (GitHub Pages, la PWA): en el móvil,
+   la hoja de compartir del sistema ("Guardar en Archivos"); si no la hay o no acepta el
+   archivo, una descarga normal. "Copiar como texto" sigue siempre como alternativa. */
+async function getDownloader(){
+  try{const d=await (window.claude&&window.claude.use?window.claude.use('downloads'):null);if(d)return d;}catch(e){}
+  return {save:saveLocal};
+}
+async function saveLocal({filename,data}){
+  const type=/\.json$/.test(filename)?'application/json':/\.csv$/.test(filename)?'text/csv':'text/plain';
+  const blob=new Blob([data],{type:type+';charset=utf-8'});
+  if(matchMedia('(pointer:coarse)').matches&&navigator.canShare){
+    const file=new File([blob],filename,{type});
+    if(navigator.canShare({files:[file]})){
+      try{await navigator.share({files:[file]});return;}
+      catch(e){if(e&&e.name==='AbortError'){const x=new Error('declined');x.code='declined';throw x;}}
+    }
+  }
+  const url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),10000);
+}
 async function saveExport(){
-  let dl=null;try{dl=await (window.claude&&window.claude.use?window.claude.use('downloads'):null);}catch(e){}
+  const dl=await getDownloader();
   if(!dl){toast('Aquí no se puede guardar el archivo: usa Copiar');return;}
   const ext=expFmt==='tabla'?'csv':expFmt==='resumido'?'txt':'md';
   const name='comida-app-'+{dia:'dia',semana:'semana',mes:'mes',ano:'ano'}[ui.view]+'-'+ui.cursor+'.'+ext;
@@ -617,7 +639,7 @@ function openBackup(tab){
 function backupJson(){return JSON.stringify({app:'comida-app',version:1,exportado:new Date().toISOString(),ingestas:Object.values(data.ingestas),dias:data.dias},null,2);}
 async function saveBackup(){
   const json=backupJson(),name='comida-app-copia-'+TODAY+'.json';
-  let dl=null;try{dl=await (window.claude&&window.claude.use?window.claude.use('downloads'):null);}catch(e){}
+  const dl=await getDownloader();
   const done=()=>{data.ultimaCopia=new Date().toISOString();save();toast('Copia guardada');render();openBackup();};
   const fallback=msg=>showBackupText(msg);
   if(!dl){fallback('Aquí no se puede descargar el archivo. Copia este texto y guárdalo en Notas o en un archivo .json:');return;}
