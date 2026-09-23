@@ -1,18 +1,20 @@
 # Comida App — código
 
-Registro de alimentación y estado emocional. Local, usuario único, sin nube.
+Registro de alimentación y estado emocional. Local, sin cuentas y sin nube: cada
+móvil es una persona.
 
 **La documentación vive en el vault**, no aquí: `../Vault Proyectos/Comida_App/`.
-Empezar por su `Índice.md`. Este repo es sólo la implementación.
+Empezar por `Comida App.md`. Este repo es sólo la implementación.
 
 | En el vault | Qué es |
 |---|---|
-| `Tareas/Instrucciones.md` | Principios no negociables y la lista de qué **no** construir |
-| `Tareas/Fase-0-Obsidian.md` | Cómo registrar hoy, sin código |
-| `Diseño/Esquema-de-Datos.md` | **El contrato de datos.** Manda sobre el código |
-| `Diseño/Decisiones.md` | Las nueve decisiones (D1–D9), con su motivo |
-| `Diseño/Analisis.md` | Las cuatro preguntas pre-registradas (Q1–Q4) |
-| `Diseño/Banco-de-Ideas.md` | Decisiones abiertas e ideas |
+| `Tareas/CA-Especificacion-App-Registro.md` | **La app de registro**: pantallas, datos, exportación, diseño y plan. Con su prototipo `CA-Prototipo-v0.4.html` |
+| `Tareas/CA-Instrucciones.md` | Principios no negociables y la lista de qué **no** construir |
+| `Tareas/CA-Fase-0-Obsidian.md` | Sustituida por el prototipo (D10); quedan sus cuatro preguntas |
+| `Diseño/CA-Esquema-de-Datos.md` | **El contrato de datos.** Manda sobre el código |
+| `Diseño/CA-Decisiones.md` | Las doce decisiones (D1–D12), con su motivo |
+| `Diseño/CA-Analisis.md` | Las cuatro preguntas pre-registradas (Q1–Q4) |
+| `Diseño/CA-Banco-de-Ideas.md` | Decisiones abiertas e ideas |
 | `QA/` | Bugs activos, sin verificar, resueltos y compatibilidad |
 | `fixtures/` | Contrato de aceptación del parser y del validador |
 
@@ -24,13 +26,21 @@ Empezar por su `Índice.md`. Este repo es sólo la implementación.
 | 2 | `parser/` — dataframe *tidy*, parquet y SQLite | ✅ v1 |
 | 3 | `validar.py` — erratas, vocabulario y campos ausentes | ✅ v1 |
 | — | `visor/` — página local de revisión (calendario + día) | ✅ v1 |
-| 4 | Captura rápida (PWA móvil) | 🔒 después de la Fase 0 |
-| 5 | Calendario de revisión interactivo | 🔒 después de la Fase 0 |
+| 4 | `app/` — captura en el móvil | ⏳ prototipo v0.4, tal cual; después, PWA |
+| 5 | Calendario de revisión (Día, Semana, Mes, Año) | ⏳ dentro de `app/` |
 | 6 | Vistas de análisis (Q1–Q4) | 🔒 después de 4–6 semanas de registro |
 
-Los puntos 1–3 no necesitan datos reales, por eso están hechos. Del 4 en adelante
-**no se construye a ciegas**: su entrada son las cuatro preguntas del final de
-`Tareas/Fase-0-Obsidian.md`, y para responderlas hay que haber registrado.
+Desde el 23-09-2026 la fuente de verdad es la app (D1 revisada) y la Fase 0 en
+Obsidian queda sustituida por registrar con el prototipo (D10). `validar.py`,
+`parsear.py` y el visor siguen sirviendo sobre los `.md` **exportados** desde la app.
+
+## La app (`app/`)
+
+`app/index.html` es el prototipo v0.4, copiado sin cambios: un solo fichero, se
+abre en el navegador tal cual. Guarda en el `localStorage` del navegador, así que
+cada móvil tiene sus propios datos y no salen de ahí salvo al exportar o guardar
+copia. Todavía carga las fuentes de Google Fonts y sólo descarga archivos dentro
+de Claude.ai (fuera, "copiar como texto"): las dos cosas se arreglan en la PWA.
 
 ## Uso
 
@@ -53,7 +63,7 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 
 `validar.py` sale con código 1 si hay **errores**. Los avisos nunca hacen fallar
 nada: avisar de un campo ausente no es rechazar la entrada (principio 3 de
-`Tareas/Instrucciones.md`). Salida en formato de compilador, `fichero:línea:`,
+`Tareas/CA-Instrucciones.md`). Salida en formato de compilador, `fichero:línea:`,
 que VS Code hace clicable:
 
 ```
@@ -71,7 +81,7 @@ emocional y pensamientos: la superficie de exposición es cero por defecto (D9).
 Hay un test que lo comprueba en cada ejecución.
 
 Enseña **calendario y día**, y ni un gráfico de patrones. No es una limitación
-técnica: `Diseño/Analisis.md` pide 4–6 semanas de registro antes de mirar nada.
+técnica: `Diseño/CA-Analisis.md` pide 4–6 semanas de registro antes de mirar nada.
 Y los días se colorean sólo por *si hay registro*, nunca por cómo fue el día —
 un semáforo de "buen día / mal día" está expresamente prohibido en las
 instrucciones del proyecto.
@@ -103,7 +113,7 @@ tests/                             contrato de aceptación (59 tests)
 
 Ningún enum está escrito a mano en el código: `esquema/__init__.py` los lee de
 `dia.schema.json`, y hasta el mapa campo→vocabulario se deriva de sus `$ref`.
-Para añadir un valor al vocabulario se toca `Diseño/Esquema-de-Datos.md` (el
+Para añadir un valor al vocabulario se toca `Diseño/CA-Esquema-de-Datos.md` (el
 vault) y luego `dia.schema.json`, **en ese orden**.
 
 ## Tests
@@ -130,9 +140,10 @@ Las dos corrompen en silencio, sin dar error, y las dos están cubiertas:
 - `hambre_antes: no` sin comillas se lee como el **booleano `False`** (la lista
   de PyYAML incluye `yes`/`no`/`on`/`off`), y `no` es un valor del vocabulario
   `hambre`. Se deshace en `esquema.destrampar()`, en un único sitio.
-  **Decisión abierta**, ver `Diseño/Banco-de-Ideas.md` §1.1.
+  **Decisión abierta**, ver `Diseño/CA-Banco-de-Ideas.md` §1.1.
 
 ## Privacidad
 
 Aquí no entra ni un dato real: `diario/` y `derivado/` están en `.gitignore`.
-El registro vive en el vault de Obsidian. Repositorio privado (D9).
+Los registros viven en el móvil de cada persona (D1, D12) y las copias de
+seguridad no se suben aquí.

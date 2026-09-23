@@ -123,7 +123,7 @@ def _revisar_dia(acta: _Acta, campos: dict, fecha_fichero: str | None) -> None:
     if ausentes and lista:
         acta.aviso(1, "campos_dia_ausentes",
                    "el dia no registra " + ", ".join(f"`{c}`" for c in ausentes),
-                   "el sueno es el principal factor de confusion de la ansiedad (Diseño/Esquema-de-Datos.md)")
+                   "el sueno es el principal factor de confusion de la ansiedad (Diseño/CA-Esquema-de-Datos.md)")
 
 
 def _revisar_fecha(acta: _Acta, par, fecha_fichero: str | None) -> None:
