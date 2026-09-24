@@ -18,7 +18,7 @@ from parser.lector import Dia, minutos
 
 # Orden de las columnas: primero el día (desnormalizado), luego la ingesta, luego
 # lo calculado. Que se lea de izquierda a derecha como se registró.
-COLUMNAS_DIA = ["fecha", "dia_semana", "agua_litros", "actividad", "sueno_horas", "sueno_calidad"]
+COLUMNAS_DIA = ["fecha", "dia_semana", "agua_litros", "actividad", "actividad_horas", "sueno_horas", "sueno_calidad"]
 COLUMNAS_INGESTA = [
     "tipo", "hora", "alimentos", "hambre_antes",
     "emociones_antes", "pensamientos_antes",
@@ -52,7 +52,7 @@ def tabla_dias(dias: list[Dia]) -> pd.DataFrame:
             "fichero": dia.fichero,
             "n_ingestas": len(dia.ingestas),
             "registrado": dia.registrado,
-            **{c: dia.campos.get(c) for c in ("agua_litros", "actividad",
+            **{c: dia.campos.get(c) for c in ("agua_litros", "actividad", "actividad_horas",
                                               "sueno_horas", "sueno_calidad")},
             **{c: dia.secciones.get(c) for c in ("reflexiones", "pensamientos_predominantes",
                                                  "orgullo_y_gratitud")},
@@ -86,7 +86,7 @@ def tabla_ingestas(dias: list[Dia]) -> pd.DataFrame:
             filas.append({
                 "fecha": dia.fecha,
                 "dia_semana": dia.fecha.weekday(),
-                **{c: dia.campos.get(c) for c in ("agua_litros", "actividad",
+                **{c: dia.campos.get(c) for c in ("agua_litros", "actividad", "actividad_horas",
                                                   "sueno_horas", "sueno_calidad")},
                 "tipo": ingesta.get("tipo"),
                 "hora": ingesta.get("hora"),

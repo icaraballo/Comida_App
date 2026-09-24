@@ -57,7 +57,7 @@ def construir(marco_dias: pd.DataFrame, marco_ingestas: pd.DataFrame, origen: st
             "dia_semana": int(fila["dia_semana"]),
             "n_ingestas": int(fila["n_ingestas"]),
             **{campo: _limpio(fila.get(campo)) for campo in (
-                "agua_litros", "actividad", "sueno_horas", "sueno_calidad",
+                "agua_litros", "actividad", "actividad_horas", "sueno_horas", "sueno_calidad",
                 "reflexiones", "pensamientos_predominantes", "orgullo_y_gratitud")},
             "ingestas": por_fecha.get(fecha, []),
         })

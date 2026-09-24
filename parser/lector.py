@@ -26,7 +26,7 @@ from validador import nota as N
 RE_NOMBRE = re.compile(r"^(\d{4}-\d{2}-\d{2})\.md$")
 RE_HORA = re.compile(r"^(\d{1,2}):(\d{2})$")
 
-CAMPOS_DIA = ("agua_litros", "actividad", "sueno_horas", "sueno_calidad")
+CAMPOS_DIA = ("agua_litros", "actividad", "actividad_horas", "sueno_horas", "sueno_calidad")
 SECCIONES = {
     "reflexiones": "reflexiones",
     "pensamientos_predominantes": "pensamientos_predominantes",

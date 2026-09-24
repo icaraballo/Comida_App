@@ -14,6 +14,12 @@
     },
     "agua_litros": { "type": "number", "minimum": 0 },
     "actividad": { "type": "string" },
+    "actividad_horas": {
+      "description": "[ANADIDO] Duracion en horas; la app la registra con un contador de 0,25 h.",
+      "type": "number",
+      "minimum": 0,
+      "maximum": 24
+    },
     "sueno_horas": {
       "description": "[ANADIDO] Principal factor de confusion de la ansiedad.",
       "type": "number",

@@ -102,6 +102,7 @@ def _revisar_dia(acta: _Acta, campos: dict, fecha_fichero: str | None) -> None:
     _numero(acta, campos.get("agua_litros"), "agua_litros", minimo=0)
     _numero(acta, campos.get("sueno_horas"), "sueno_horas", minimo=0, maximo=24)
     _texto(acta, campos.get("actividad"), "actividad")
+    _numero(acta, campos.get("actividad_horas"), "actividad_horas", minimo=0, maximo=24)
     _enum(acta, campos.get("sueno_calidad"), "sueno_calidad", "calidad_sueno")
 
     ingestas = campos.get("ingestas")

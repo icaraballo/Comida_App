@@ -23,9 +23,10 @@ con `Tareas/CA-Instrucciones.md` del vault, **manda el vault**.
    libre; el etiquetado es posterior y en batch.
 5. **El prototipo manda sobre el aspecto.** `app/` parte de
    `CA-Prototipo-v0.4.html` (vault, `Diseño/`) y tiene que verse y comportarse
-   igual. Si la especificación y el prototipo discrepan, preguntar. Los puntos
-   abiertos (banco de ideas de `CA-Instrucciones`, §4.1) no se deciden sin
-   el usuario.
+   igual, salvo en lo que cambia D13 (`Diseño/CA-Decisiones.md`), donde
+   manda `app/`. Si la especificación y el prototipo discrepan, preguntar.
+   Lo que siga abierto en el banco de ideas de `CA-Instrucciones` no se decide
+   sin el usuario.
 
 ## Qué NO construir
 

@@ -128,11 +128,6 @@ button{cursor:pointer}
 .summary .big{font-family:var(--f-display);font-weight:700;font-size:30px;line-height:1;font-variant-numeric:tabular-nums}
 .summary .of{color:var(--ink-2)}
 .summary .pend{margin-left:auto;font-size:13px;color:var(--warn);font-weight:700}
-.bar{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
-.bar span{height:8px;border-radius:4px;background:var(--surface-2)}
-.bar span.on{background:var(--t)}
-.bar span.half{background:var(--ts);box-shadow:inset 0 0 0 1.5px var(--t)}
-.barlbl{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;font-size:11px;color:var(--ink-3);text-align:center}
 .slot{--t:var(--accent);display:flex;align-items:center;justify-content:space-between;gap:10px;border:1.5px dashed var(--line);border-radius:14px;padding:12px 14px;background:transparent;color:var(--ink-3);width:100%;text-align:left}
 .slot:hover{border-color:var(--t)}
 .slot b i{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--t);margin-right:8px;vertical-align:1px}
@@ -173,11 +168,11 @@ button{cursor:pointer}
 .legend i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:5px}
 
 /* month */
-.mgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.mgrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
 .dow{font-size:12px;color:var(--ink-3);text-align:center;text-transform:uppercase;letter-spacing:.05em;padding-bottom:2px}
-.mcell{aspect-ratio:1;max-width:100%;border:0;border-radius:10px;background:var(--heat-0);display:grid;align-content:space-between;padding:6px;text-align:left;font-variant-numeric:tabular-nums}
-.mcell b{font-size:14px}
-.mcell small{font-size:11px;opacity:.85}
+.mcell{aspect-ratio:1;min-width:0;max-width:100%;border:0;border-radius:10px;background:var(--heat-0);display:grid;align-content:space-between;padding:6px;text-align:left;font-variant-numeric:tabular-nums}
+.mcell b{font-size:12px;font-weight:400;opacity:.8}
+.mcell strong{justify-self:end;font-family:var(--f-display);font-size:20px;line-height:1}
 .mcell.blank{background:transparent}
 .mcell.is-today{outline:2px solid var(--ink);outline-offset:1px}
 .h1{background:var(--heat-1)}.h2{background:var(--heat-2)}.h3{background:var(--heat-3);color:#fff}.h4{background:var(--heat-4);color:var(--accent-ink)}
@@ -186,13 +181,14 @@ button{cursor:pointer}
 
 /* year */
 .ygrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
-.ymonth{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--card-shadow);padding:10px;text-align:left;display:grid;gap:8px;width:100%}
+.ymonth{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--card-shadow);padding:10px;text-align:left;display:grid;gap:8px;align-content:start;width:100%;min-width:0}
 .ymonth header{display:flex;justify-content:space-between;align-items:baseline}
 .ymonth header b{font-family:var(--f-display);font-size:15px}
 .ymonth header span{font-size:12px;color:var(--ink-3)}
-.ymini{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
-.ymini i{aspect-ratio:1;border-radius:2px;background:var(--heat-0)}
+.ymini{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:2px;align-content:start}
+.ymini i{aspect-ratio:1;min-width:0;border-radius:2px;background:var(--heat-0);display:grid;place-items:center;font-style:normal;font-size:10px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
 .ymini i.blank{background:transparent}
+.ymini i.h1{background:var(--heat-1)}.ymini i.h2{background:var(--heat-2)}.ymini i.h3{background:var(--heat-3)}.ymini i.h4{background:var(--heat-4)}
 
 /* FAB */
 .fab{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:6;border:0;background:var(--accent);color:var(--accent-ink);border-radius:999px;padding:14px 26px;font-weight:700;font-size:16px;box-shadow:var(--shadow);display:flex;gap:8px;align-items:center;white-space:nowrap}
@@ -235,6 +231,12 @@ textarea{min-height:64px;resize:vertical}
 .two{display:grid;grid-template-columns:1fr 130px;gap:10px}
 @media (max-width:420px){.two{grid-template-columns:1fr}}
 .hint{font-size:13px;color:var(--ink-3);margin:0}
+.step{display:flex;align-items:center;gap:8px}
+.step button{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--bg);font-size:20px;line-height:1;display:grid;place-items:center}
+.step output{min-width:88px;text-align:center;font-family:var(--f-display);font-weight:700;font-size:18px;font-variant-numeric:tabular-nums}
+.step output.empty{color:var(--ink-3);font-weight:500;font-size:15px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:420px){.pair{grid-template-columns:1fr}}
 .sheet-foot{display:flex;justify-content:space-between;gap:10px;margin-top:6px}
 .export{width:100%;min-height:260px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;z-index:30}
@@ -246,7 +248,7 @@ textarea{min-height:64px;resize:vertical}
 
 <div class="app">
   <header class="top">
-    <div class="brand"><h1>Comida App <span class="proto">v0.4</span></h1><button class="pillbtn" id="backupBtn">Copia de seguridad</button></div>
+    <div class="brand"><h1>Comida App <span class="proto">v0.5</span></h1><button class="pillbtn" id="backupBtn">Copia de seguridad</button></div>
     <div class="tabs" role="group" aria-label="Vista">
       <button id="tab-dia" data-view="dia">Día</button>
       <button id="tab-semana" data-view="semana">Semana</button>
@@ -275,6 +277,12 @@ const TIPO_CORTO={desayuno:'D',media_manana:'MM',comida:'C',merienda:'M',cena:'C
 const EMOCIONES=['Felicidad','Ansiedad','Tristeza','Rabia','Culpa','Miedo','Aburrimiento','Frustración','Ninguna'];
 const ENERGIA=['Alta','Normal','Baja','Sueño','Apatía'];
 const SINTOMAS=['Dolor','Hinchazón','Malestar','Mareo','Gases','Acidez'];
+const HAMBRE=['Sí','Algo','No'];
+const LUGAR=['Casa','Trabajo','Fuera'];
+const PANTALLA=['Sí','No'];
+const CALIDAD=['Buena','Regular','Mala'];
+/* Contadores del cierre del día: paso, primer valor al pulsar ＋ y máximo. */
+const STEPS={agua:{inc:.25,start:.25,max:10,fmt:n=>fmtNum(n)+' l'},actividadHoras:{inc:.25,start:.25,max:24,fmt:n=>fmtHoras(n)},suenoHoras:{inc:.5,start:7,max:24,fmt:n=>fmtHoras(n)}};
 const MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 const DIAS=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
 const DOW=['L','M','X','J','V','S','D'];
@@ -294,7 +302,7 @@ let ui={view:'dia',cursor:TODAY};
 try{const u=JSON.parse(localStorage.getItem(STORE+'-ui')||'null');if(u&&u.view)ui.view=u.view;}catch(e){}
 
 function load(){
-  try{const raw=localStorage.getItem(STORE);if(raw){const d=JSON.parse(raw);if(d&&d.ingestas)return d;}}catch(e){}
+  try{const raw=localStorage.getItem(STORE);if(raw){const d=JSON.parse(raw);if(d&&d.ingestas){normData(d);return d;}}}catch(e){}
   return seed();
 }
 function save(){try{localStorage.setItem(STORE,JSON.stringify(data));}catch(e){}}
@@ -303,12 +311,12 @@ function saveUi(){try{localStorage.setItem(STORE+'-ui',JSON.stringify({view:ui.v
 function seed(){
   const d={ingestas:{},dias:{},ejemplos:true};
   const t=new Date();
-  const add=(off,o)=>{const id=uid();d.ingestas[id]=Object.assign({id,fecha:iso(addDays(t,off)),emoAntes:[],emoAntesOtra:'',pensAntes:'',emoDespues:[],emoDespuesOtra:'',pensDespues:'',energia:'',energiaOtro:'',sintomas:[],sintomasOtros:'',ejemplo:true},o);};
-  add(0,{tipo:'desayuno',hora:'07:40',alimentos:'Café con leche, tostada con tomate y aceite',emoAntes:['Ansiedad'],pensAntes:'Voy tarde, reunión a las 9',emoDespues:['Ninguna'],pensDespues:'Mejor, más tranquilo',energia:'Normal'});
+  const add=(off,o)=>{const id=uid();d.ingestas[id]=Object.assign(ingVacia(),{id,fecha:iso(addDays(t,off)),ejemplo:true},o);};
+  add(0,{tipo:'desayuno',hora:'07:40',alimentos:'Café con leche, tostada con tomate y aceite',hambre:'Sí',lugar:'Casa',pantalla:'Sí',emoAntes:['Ansiedad'],pensAntes:'Voy tarde, reunión a las 9',emoDespues:['Ninguna'],pensDespues:'Mejor, más tranquilo',energia:'Normal'});
   add(0,{tipo:'media_manana',hora:'11:15',alimentos:'Plátano y un puñado de nueces',emoAntes:['Aburrimiento'],pensAntes:'Necesito un descanso'});
   add(-1,{tipo:'desayuno',hora:'07:30',alimentos:'Yogur con avena y fruta',emoAntes:['Felicidad'],emoDespues:['Felicidad'],energia:'Alta'});
   add(-1,{tipo:'comida',hora:'14:20',alimentos:'Lentejas, ensalada, pan',emoAntes:['Frustración'],pensAntes:'La mañana no ha salido como quería',emoDespues:['Culpa'],pensDespues:'He comido muy rápido',energia:'Sueño',sintomas:['Hinchazón']});
-  add(-1,{tipo:'picoteo',hora:'18:05',alimentos:'Galletas',emoAntes:['Aburrimiento','Ansiedad'],emoDespues:['Culpa'],energia:'Baja'});
+  add(-1,{tipo:'picoteo',hora:'18:05',alimentos:'Galletas',hambre:'No',lugar:'Trabajo',pantalla:'Sí',emoAntes:['Aburrimiento','Ansiedad'],emoDespues:['Culpa'],energia:'Baja'});
   add(-1,{tipo:'cena',hora:'21:30',alimentos:'Tortilla francesa y verduras',emoAntes:['Ninguna'],emoDespues:['Ninguna'],energia:'Normal'});
   add(-2,{tipo:'desayuno',hora:'08:00',alimentos:'Café y bizcocho',emoAntes:['Ninguna'],emoDespues:['Ninguna'],energia:'Normal'});
   add(-2,{tipo:'comida',hora:'14:00',alimentos:'Arroz con pollo',emoAntes:['Felicidad'],emoDespues:['Felicidad'],energia:'Normal'});
@@ -317,7 +325,7 @@ function seed(){
     const n=(Math.abs(off)%4)+1;
     ['desayuno','comida','cena','merienda'].slice(0,n).forEach((tp,i)=>add(off,{tipo:tp,hora:['08:00','14:00','21:00','17:30'][i],alimentos:'(ejemplo)',emoAntes:['Ninguna'],emoDespues:['Ninguna'],energia:'Normal'}));
   }
-  d.dias[iso(addDays(t,-1))]={agua:'1,5 litros',actividad:'Carrera suave 40 min',reflexiones:'Cuando estoy frustrado como más rápido.',predominantes:'Trabajo, prisas',orgullo:'He salido a correr aunque estaba cansado',gratitud:'La cena tranquila en casa',ejemplo:true};
+  d.dias[iso(addDays(t,-1))]={agua:1.5,actividadHoras:.75,actividad:'Carrera suave',suenoHoras:6.5,suenoCalidad:'Regular',reflexiones:'Cuando estoy frustrado como más rápido.',predominantes:'Trabajo, prisas',orgullo:'He salido a correr aunque estaba cansado',gratitud:'La cena tranquila en casa',ejemplo:true};
   return d;
 }
 
@@ -326,7 +334,45 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const byDay=f=>Object.values(data.ingestas).filter(x=>x.fecha===f).sort((a,b)=>(a.hora||'99').localeCompare(b.hora||'99'));
 const countDay=f=>Object.values(data.ingestas).reduce((n,x)=>n+(x.fecha===f),0);
 const hasAfter=x=>x.emoDespues.length||x.emoDespuesOtra||x.pensDespues||x.energia||x.sintomas.length||x.sintomasOtros;
-const hasBefore=x=>x.emoAntes.length||x.emoAntesOtra||x.pensAntes;
+const hasBefore=x=>x.hambre||x.lugar||x.pantalla||x.emoAntes.length||x.emoAntesOtra||x.pensAntes;
+function ingVacia(){return {hambre:'',lugar:'',pantalla:'',emoAntes:[],emoAntesOtra:'',pensAntes:'',emoDespues:[],emoDespuesOtra:'',pensDespues:'',energia:'',energiaOtro:'',sintomas:[],sintomasOtros:''};}
+const fmtNum=n=>String(Math.round(n*100)/100).replace('.',',');
+function fmtHoras(n){if(!n)return '0 h';const h=Math.floor(n),m=Math.round((n-h)*60);return (h?h+' h':'')+(h&&m?' ':'')+(m?m+' min':'');}
+/* Las copias version 1 guardaban el agua como texto ("1,5 litros") y la actividad
+   sólo como texto ("Carrera 40 min"). Se saca el número si lo hay; si no, el texto
+   se conserva para no perder nada. */
+function normDia(di){
+  if(typeof di.agua==='string'){const m=di.agua.match(/\d+(?:[.,]\d+)?/);if(m){di.agua=Number(m[0].replace(',','.'));}else{di.aguaTexto=di.agua;delete di.agua;}}
+  if(di.actividad&&di.actividadHoras==null){
+    const h=di.actividad.match(/(\d+(?:[.,]\d+)?)\s*h/i),mi=di.actividad.match(/(\d+)\s*min/i);
+    const v=(h?Number(h[1].replace(',','.')):0)+(mi?Number(mi[1])/60:0);
+    if(v){di.actividadHoras=Math.round(v*4)/4;const r=di.actividad.replace(/\d+(?:[.,]\d+)?\s*h\b/i,'').replace(/\d+\s*min\b/i,'').replace(/\s+/g,' ').trim();if(r)di.actividad=r;else delete di.actividad;}
+  }
+  return di;
+}
+function normData(d){
+  Object.keys(d.ingestas).forEach(k=>{d.ingestas[k]=Object.assign(ingVacia(),d.ingestas[k]);});
+  d.dias=d.dias||{};Object.values(d.dias).forEach(normDia);
+  return d;
+}
+const lower=v=>v?v.toLowerCase():'';
+const hambreTxt=v=>({'Sí':'Con hambre','Algo':'Algo de hambre','No':'Sin hambre'})[v]||'';
+const pantallaTxt=v=>v==='Sí'?'con pantalla':v==='No'?'sin pantalla':'';
+const contextoTxt=x=>[x.lugar,pantallaTxt(x.pantalla)].filter(Boolean).join(' · ');
+/* Filas del cierre del día, en el orden de la plantilla: [clave, etiqueta corta, etiqueta larga, texto]. */
+function cierreRows(di){
+  const act=[di.actividadHoras!=null?fmtHoras(di.actividadHoras):'',di.actividad||''].filter(Boolean).join(' · ');
+  const sue=[di.suenoHoras!=null?fmtHoras(di.suenoHoras):'',lower(di.suenoCalidad)].filter(Boolean).join(' · ');
+  return [
+    ['agua','Agua','Agua',di.agua!=null?fmtNum(di.agua)+' l':(di.aguaTexto||'')],
+    ['actividad','Actividad física','Actividad física',act],
+    ['sueno','Sueño','Sueño de anoche',sue],
+    ['reflexiones','Me he dado cuenta de','¿De qué me he dado cuenta?',di.reflexiones||''],
+    ['predominantes','Pensamientos predominantes','Pensamientos predominantes',di.predominantes||''],
+    ['orgullo','Orgullo','¿Qué me hace sentir orgullo hoy?',di.orgullo||''],
+    ['gratitud','Gratitud','¿Qué puedo agradecer hoy?',di.gratitud||'']
+  ];
+}
 const emoList=(arr,otra)=>arr.filter(e=>e!=='Otra').concat(otra?[otra]:[]);
 const heat=n=>n===0?'':n<=1?'h1':n<=2?'h2':n<=4?'h3':'h4';
 const longDate=f=>{const d=parse(f);return DIAS[d.getDay()]+' '+d.getDate()+' de '+MESES[d.getMonth()]};
@@ -362,7 +408,8 @@ function mealCard(x){
   const en=x.energia==='Otro'?x.energiaOtro:x.energia;
   const sint=x.sintomas.filter(s=>s!=='Otros').concat(x.sintomasOtros?[x.sintomasOtros]:[]);
   const ha=hasBefore(x),hd=hasAfter(x);
-  const antes=ha?'<div class="half a"><h5>Antes</h5><div class="emos">'+esc(a.join(' · ')||'—')+'</div>'+(x.pensAntes?'<div class="th">«'+esc(x.pensAntes)+'»</div>':'')+'</div>'
+  const ctx=[hambreTxt(x.hambre),contextoTxt(x)].filter(Boolean).join(' · ');
+  const antes=ha?'<div class="half a"><h5>Antes</h5><div class="emos">'+esc(a.join(' · ')||'—')+'</div>'+(x.pensAntes?'<div class="th">«'+esc(x.pensAntes)+'»</div>':'')+(ctx?'<div class="meta">'+esc(ctx)+'</div>':'')+'</div>'
     :'<div class="half empty"><h5>Antes</h5><div class="emos">Sin rellenar</div></div>';
   let meta=[];if(en)meta.push('Energía '+en.toLowerCase());if(sint.length)meta.push(sint.join(', ').toLowerCase());
   const desp=hd?'<div class="half d"><h5>Después</h5><div class="emos">'+esc(d.join(' · ')||'—')+'</div>'+(x.pensDespues?'<div class="th">«'+esc(x.pensDespues)+'»</div>':'')+(meta.length?'<div class="meta">'+esc(meta.join(' · '))+'</div>':'')+'</div>'
@@ -376,22 +423,16 @@ function mealCard(x){
 function renderDia(){
   const items=byDay(ui.cursor);
   const used=new Set(items.map(x=>x.tipo));
-  const main=['desayuno','media_manana','comida','merienda','cena'];
-  const done=main.filter(t=>used.has(t)).length;
   const pend=items.filter(x=>!hasAfter(x)||!hasBefore(x)).length;
-  const pic=items.filter(x=>x.tipo==='picoteo').length;
-  let h='<section class="summary" aria-label="Resumen del día"><div class="nums"><span class="big">'+done+'</span><span class="of">de 5 comidas'+(pic?' · '+pic+' picoteo'+(pic>1?'s':''):'')+'</span>'+(pend?'<span class="pend">'+pend+' por completar</span>':'')+'</div>'
-    +'<div class="bar">'+main.map(t=>{const x=items.find(y=>y.tipo===t);return '<span class="t-'+t+(x?(hasAfter(x)&&hasBefore(x)?' on':' half'):'')+'"></span>';}).join('')+'</div>'
-    +'<div class="barlbl"><span>Des.</span><span>M. mañ.</span><span>Comida</span><span>Mer.</span><span>Cena</span></div></section>';
+  let h='<section class="summary" aria-label="Resumen del día"><div class="nums"><span class="big">'+items.length+'</span><span class="of">registro'+(items.length===1?'':'s')+'</span>'+(pend?'<span class="pend">'+pend+' por completar</span>':'')+'</div></section>';
   h+='<div class="list">'+items.map(mealCard).join('');
   TIPOS.filter(([k])=>k!=='picoteo'&&!used.has(k)).forEach(([k,l])=>{
     h+='<button class="slot t-'+k+'" data-new="'+k+'"><span><b><i></i>'+l+'</b> · sin registrar</span><span aria-hidden="true">＋</span></button>';
   });
   h+='<button class="slot t-picoteo" data-new="picoteo"><span><b><i></i>Picoteo</b> · entre horas</span><span aria-hidden="true">＋</span></button></div>';
   const di=data.dias[ui.cursor]||{};
-  const rows=[['agua','Agua'],['actividad','Actividad física'],['reflexiones','¿De qué me he dado cuenta?'],['predominantes','Pensamientos predominantes'],['orgullo','¿Qué me hace sentir orgullo hoy?'],['gratitud','¿Qué puedo agradecer hoy?']];
   h+='<div class="section-h"><h3>Cierre del día</h3><button class="linkbtn" id="editDay">'+(Object.keys(di).length?'Editar':'Rellenar')+'</button></div>';
-  h+='<div class="dayinfo"><dl>'+rows.map(([k,l])=>'<div class="row"><dt>'+l+'</dt><dd class="'+(di[k]?'':'empty')+'">'+esc(di[k]||'Sin anotar')+'</dd></div>').join('')+'</dl></div>';
+  h+='<div class="dayinfo"><dl>'+cierreRows(di).map(([k,,l,v])=>'<div class="row"><dt>'+l+'</dt><dd class="'+(v?'':'empty')+'">'+esc(v||'Sin anotar')+'</dd></div>').join('')+'</dl></div>';
   return h;
 }
 function renderSemana(){
@@ -420,9 +461,9 @@ function renderMes(){
   monthCells(c.getFullYear(),c.getMonth()).forEach(f=>{
     if(!f){h+='<div class="mcell blank"></div>';return;}
     const n=countDay(f);
-    h+='<button class="mcell '+heat(n)+(f===TODAY?' is-today':'')+'" data-day="'+f+'" aria-label="'+longDate(f)+', '+n+' registros"><b>'+parse(f).getDate()+'</b><small>'+(n?n+' reg.':'')+'</small></button>';
+    h+='<button class="mcell '+heat(n)+(f===TODAY?' is-today':'')+'" data-day="'+f+'" aria-label="'+longDate(f)+', '+n+' registros"><b>'+parse(f).getDate()+'</b><strong>'+(n||'')+'</strong></button>';
   });
-  h+='</div><div class="legend"><span>Registros por día:</span><span><i style="background:var(--heat-0)"></i>0</span><span><i style="background:var(--heat-1)"></i>1</span><span><i style="background:var(--heat-2)"></i>2</span><span><i style="background:var(--heat-3)"></i>3–4</span><span><i style="background:var(--heat-4)"></i>5+</span></div>';
+  h+='</div><div class="legend"><span>El número grande es cuántos registros hay ese día:</span><span><i style="background:var(--heat-0)"></i>0</span><span><i style="background:var(--heat-1)"></i>1</span><span><i style="background:var(--heat-2)"></i>2</span><span><i style="background:var(--heat-3)"></i>3–4</span><span><i style="background:var(--heat-4)"></i>5+</span></div>';
   return h;
 }
 function renderAno(){
@@ -431,8 +472,8 @@ function renderAno(){
   for(let mo=0;mo<12;mo++){
     const cells=monthCells(y,mo);
     const days=cells.filter(f=>f&&countDay(f)).length;
-    h+='<button class="ymonth" data-month="'+y+'-'+pad(mo+1)+'-01"><header><b>'+MESES[mo][0].toUpperCase()+MESES[mo].slice(1)+'</b><span>'+(days?days+' días':'')+'</span></header><div class="ymini">'
-      +cells.map(f=>f?'<i class="'+heat(countDay(f))+'"></i>':'<i class="blank"></i>').join('')+'</div></button>';
+    h+='<button class="ymonth" data-month="'+y+'-'+pad(mo+1)+'-01"><header><b>'+MESES[mo][0].toUpperCase()+MESES[mo].slice(1)+'</b><span>'+(days?days+(days===1?' día':' días'):'')+'</span></header><div class="ymini">'
+      +cells.map(f=>{if(!f)return '<i class="blank"></i>';const n=countDay(f);return '<i class="'+heat(n)+'">'+(n||'')+'</i>';}).join('')+'</div></button>';
   }
   return h+'</div>';
 }
@@ -441,7 +482,7 @@ function renderAno(){
 let draft=null;
 function openIngesta(id,tipo){
   const now=new Date();
-  draft=id?JSON.parse(JSON.stringify(data.ingestas[id])):{id:null,fecha:ui.view==='dia'?ui.cursor:TODAY,tipo:tipo||guessTipo(now),hora:pad(now.getHours())+':'+pad(now.getMinutes()),alimentos:'',emoAntes:[],emoAntesOtra:'',pensAntes:'',emoDespues:[],emoDespuesOtra:'',pensDespues:'',energia:'',energiaOtro:'',sintomas:[],sintomasOtros:''};
+  draft=id?JSON.parse(JSON.stringify(data.ingestas[id])):Object.assign(ingVacia(),{id:null,fecha:ui.view==='dia'?ui.cursor:TODAY,tipo:tipo||guessTipo(now),hora:pad(now.getHours())+':'+pad(now.getMinutes()),alimentos:''});
   const tkey=o=>{const t=TIPOS.find(t=>t[1]===o);return t?' class="t-'+t[0]+'"':'';};
   const pick=(name,opts,sel,multi)=>'<div class="pick" data-pick="'+name+'" data-multi="'+(multi?1:0)+'">'+opts.map(o=>'<button type="button"'+(name==='tipo'?tkey(o):'')+' data-v="'+esc(o)+'" aria-pressed="'+(multi?sel.includes(o):sel===o)+'">'+esc(o)+'</button>').join('')+'</div>';
   const openA=!!(id&&hasBefore(draft)),openD=!!(id&&hasAfter(draft));
@@ -453,6 +494,9 @@ function openIngesta(id,tipo){
     +'<div class="field"><label for="f-hora">Hora</label><input type="time" id="f-hora" value="'+esc(draft.hora)+'"></div></div>'
     +'<div class="field"><label for="f-fecha">Día</label><input type="text" id="f-fecha" value="'+esc(longDate(draft.fecha))+'" readonly></div></div>'
     +'<details class="block antes"'+(openA?' open':'')+'><summary><h4><span style="all:unset">Antes de comer</span><span>Opcional · puedes rellenarlo luego</span></h4><span class="chev" aria-hidden="true">⌄</span></summary><div class="inner">'
+    +'<div class="field"><legend>¿Tengo hambre?</legend>'+pick('hambre',HAMBRE,draft.hambre,false)+'</div>'
+    +'<div class="pair"><div class="field"><legend>¿Dónde?</legend>'+pick('lugar',LUGAR,draft.lugar,false)+'</div>'
+    +'<div class="field"><legend>¿Con pantalla?</legend>'+pick('pantalla',PANTALLA,draft.pantalla,false)+'</div></div>'
     +'<div class="field"><legend>¿Cómo me siento?</legend>'+pick('emoAntes',EMOCIONES.concat('Otra'),draft.emoAntes.concat(draft.emoAntesOtra?['Otra']:[]),true)+'</div>'
     +other('emoAntesOtra',draft.emoAntesOtra,'Otra emoción',!!draft.emoAntesOtra)
     +'<div class="field"><label for="f-pensAntes">¿Qué pienso?</label><textarea id="f-pensAntes">'+esc(draft.pensAntes)+'</textarea></div></div></details>'
@@ -476,6 +520,7 @@ function saveIngesta(){
   const x=draft;
   x.tipo=(TIPOS.find(t=>t[1]===tipoLbl)||['comida'])[0];
   x.hora=$('f-hora').value;x.alimentos=$('f-alimentos').value.trim();
+  x.hambre=readPick('hambre')[0]||'';x.lugar=readPick('lugar')[0]||'';x.pantalla=readPick('pantalla')[0]||'';
   const ea=readPick('emoAntes'),ed=readPick('emoDespues');
   x.emoAntes=ea.filter(e=>e!=='Otra');x.emoAntesOtra=ea.includes('Otra')?$('f-emoAntesOtra').value.trim():'';
   x.emoDespues=ed.filter(e=>e!=='Otra');x.emoDespuesOtra=ed.includes('Otra')?$('f-emoDespuesOtra').value.trim():'';
@@ -492,17 +537,33 @@ function saveIngesta(){
 function openDay(){
   const di=data.dias[ui.cursor]||{};
   const f=(k,l,ta)=>'<div class="field"><label for="d-'+k+'">'+l+'</label>'+(ta?'<textarea id="d-'+k+'">'+esc(di[k]||'')+'</textarea>':'<input type="text" id="d-'+k+'" value="'+esc(di[k]||'')+'">')+'</div>';
+  const st=(k,l)=>'<div class="field"><legend id="lb-'+k+'">'+l+'</legend><div class="step" data-step="'+k+'" role="group" aria-labelledby="lb-'+k+'"><button type="button" data-dec aria-label="Menos">−</button>'+stepOut(k,di[k])+'<button type="button" data-inc aria-label="Más">＋</button></div></div>';
+  const cal='<div class="field"><legend>¿Qué tal he dormido?</legend><div class="pick" data-pick="suenoCalidad" data-multi="0">'+CALIDAD.map(o=>'<button type="button" data-v="'+o+'" aria-pressed="'+(di.suenoCalidad===o)+'">'+o+'</button>').join('')+'</div></div>';
   $('overlay').innerHTML='<div class="scrim" data-close></div><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sh-t"><form class="sheet-in" id="fDay">'
     +'<div class="sheet-head"><button type="button" class="btn ghost" data-close>Cancelar</button><h3 id="sh-t">Cierre del día</h3><button class="btn primary" type="submit">Guardar</button></div>'
     +'<p class="hint" style="margin-bottom:12px">'+esc(longDate(ui.cursor))+'</p>'
-    +'<div class="block"><div class="two">'+f('agua','Agua durante el día')+f('actividad','Actividad física')+'</div></div>'
+    +'<div class="block"><div class="pair">'+st('agua','Agua durante el día')+st('actividadHoras','Actividad física')+'</div>'
+    +(di.aguaTexto?'<p class="hint">Anotado antes como texto: «'+esc(di.aguaTexto)+'»</p>':'')
+    +f('actividad','¿Qué actividad? (opcional)')+'</div>'
+    +'<div class="block">'+st('suenoHoras','Horas de sueño anoche')+cal+'</div>'
     +'<div class="block">'+f('reflexiones','Reflexiones y aprendizajes: ¿de qué me he dado cuenta?',1)+f('predominantes','¿Qué pensamientos han sido predominantes hoy?',1)+'</div>'
     +'<div class="block">'+f('orgullo','¿Qué me hace sentir orgullo hoy?',1)+f('gratitud','¿Qué puedo agradecer hoy?',1)+'</div>'
     +'</form></div>';
   document.body.style.overflow='hidden';
 }
+function stepOut(k,v){const has=v!=null&&v!=='';return '<output id="d-'+k+'" data-v="'+(has?v:'')+'" class="'+(has?'':'empty')+'">'+(has?STEPS[k].fmt(Number(v)):'Sin anotar')+'</output>';}
+function stepBy(k,dir){
+  const o=$('d-'+k),c=STEPS[k],cur=o.dataset.v===''?null:Number(o.dataset.v);
+  let v;
+  if(cur==null)v=dir>0?c.start:null;
+  else{v=Math.round((cur+dir*c.inc)*100)/100;if(v<0)v=null;else if(v>c.max)v=c.max;}
+  o.outerHTML=stepOut(k,v);
+}
 function saveDay(){
-  const o={};['agua','actividad','reflexiones','predominantes','orgullo','gratitud'].forEach(k=>{const v=$('d-'+k).value.trim();if(v)o[k]=v;});
+  const o={};['actividad','reflexiones','predominantes','orgullo','gratitud'].forEach(k=>{const v=$('d-'+k).value.trim();if(v)o[k]=v;});
+  Object.keys(STEPS).forEach(k=>{const v=$('d-'+k).dataset.v;if(v!=='')o[k]=Number(v);});
+  const cal=readPick('suenoCalidad')[0];if(cal)o.suenoCalidad=cal;
+  const prev=data.dias[ui.cursor]||{};if(prev.aguaTexto&&o.agua==null)o.aguaTexto=prev.aguaTexto;
   if(Object.keys(o).length)data.dias[ui.cursor]=o;else delete data.dias[ui.cursor];
   save();close();render();toast('Guardado');
 }
@@ -527,12 +588,13 @@ function rangeTitle(){
 const cap=t=>t[0].toUpperCase()+t.slice(1);
 const enOf=x=>x.energia==='Otro'?x.energiaOtro:x.energia;
 const sintOf=x=>x.sintomas.filter(v=>v!=='Otros').concat(x.sintomasOtros?[x.sintomasOtros]:[]);
-const CIERRE=[['agua','Agua'],['actividad','Actividad física'],['reflexiones','Me he dado cuenta de'],['predominantes','Pensamientos predominantes'],['orgullo','Orgullo'],['gratitud','Gratitud']];
 function dayFull(f,lvl){
   const h='#'.repeat(lvl),L=[h+' '+cap(longDate(f)),''];
   byDay(f).forEach(x=>{
     L.push(h+'# '+TIPO_LBL[x.tipo]+' · '+(x.hora||'sin hora'));
     L.push('- Alimentos: '+(x.alimentos||'—'));
+    if(x.hambre)L.push('- Hambre antes: '+x.hambre);
+    if(contextoTxt(x))L.push('- Dónde: '+contextoTxt(x));
     L.push('- Antes: '+(emoList(x.emoAntes,x.emoAntesOtra).join(', ')||'—')+(x.pensAntes?' · «'+x.pensAntes+'»':''));
     L.push('- Después: '+(emoList(x.emoDespues,x.emoDespuesOtra).join(', ')||'—')+(x.pensDespues?' · «'+x.pensDespues+'»':''));
     if(enOf(x))L.push('- Energía: '+enOf(x));
@@ -540,7 +602,8 @@ function dayFull(f,lvl){
     L.push('');
   });
   const di=data.dias[f]||{};
-  if(Object.keys(di).length){L.push(h+'# Cierre del día');CIERRE.forEach(([k,l])=>{if(di[k])L.push('- '+l+': '+di[k]);});L.push('');}
+  const c=cierreRows(di).filter(r=>r[3]);
+  if(c.length){L.push(h+'# Cierre del día');c.forEach(([,l,,v])=>L.push('- '+l+': '+v));L.push('');}
   return L.join('\n');
 }
 function dayShort(f){
@@ -548,13 +611,15 @@ function dayShort(f){
   byDay(f).forEach(x=>{
     let t='  '+(x.hora||'--:--')+' '+TIPO_LBL[x.tipo]+' — '+(x.alimentos||'—');
     const a=emoList(x.emoAntes,x.emoAntesOtra).join(', '),dd=emoList(x.emoDespues,x.emoDespuesOtra).join(', ');
+    if(x.hambre)t+=' | '+lower(hambreTxt(x.hambre));
+    if(contextoTxt(x))t+=' | '+lower(contextoTxt(x));
     if(a||dd)t+=' | '+(a||'—')+' → '+(dd||'—');
     if(enOf(x))t+=' | energía '+enOf(x).toLowerCase();
     if(sintOf(x).length)t+=' | '+sintOf(x).join(', ').toLowerCase();
     L.push(t);
   });
   const di=data.dias[f]||{};
-  const c=CIERRE.filter(([k])=>di[k]).map(([k,l])=>l+': '+di[k]);
+  const c=cierreRows(di).filter(r=>r[3]).map(([,l,,v])=>l+': '+v);
   if(c.length)L.push('  Cierre: '+c.join(' · '));
   return L.join('\n');
 }
@@ -562,8 +627,8 @@ function csvCell(v){v=String(v??'');return /[;"\n]/.test(v)?'"'+v.replace(/"/g,'
 function exportText(fmt){
   const days=rangeDays().filter(f=>countDay(f)||data.dias[f]);
   if(fmt==='tabla'){
-    const rows=[['fecha','hora','comida','alimentos','emociones_antes','pensamientos_antes','emociones_despues','pensamientos_despues','energia','sintomas']];
-    days.forEach(f=>byDay(f).forEach(x=>rows.push([f,x.hora,TIPO_LBL[x.tipo],x.alimentos,emoList(x.emoAntes,x.emoAntesOtra).join(', '),x.pensAntes,emoList(x.emoDespues,x.emoDespuesOtra).join(', '),x.pensDespues,enOf(x),sintOf(x).join(', ')])));
+    const rows=[['fecha','hora','comida','alimentos','hambre_antes','lugar','pantalla','emociones_antes','pensamientos_antes','emociones_despues','pensamientos_despues','energia','sintomas']];
+    days.forEach(f=>byDay(f).forEach(x=>rows.push([f,x.hora,TIPO_LBL[x.tipo],x.alimentos,x.hambre,x.lugar,x.pantalla,emoList(x.emoAntes,x.emoAntesOtra).join(', '),x.pensAntes,emoList(x.emoDespues,x.emoDespuesOtra).join(', '),x.pensDespues,enOf(x),sintOf(x).join(', ')])));
     return rows.map(r=>r.map(csvCell).join(';')).join('\n');
   }
   if(!days.length)return rangeTitle()+'\n\n(Sin registros)';
@@ -629,14 +694,14 @@ function openBackup(tab){
   const r='<div class="block opt"><h4>Desde un archivo</h4><p>Elige el archivo <b>.json</b> que guardaste (suele estar en Descargas o en la app Archivos).</p>'
     +'<input type="file" id="importFile" accept=".json,application/json,text/plain" hidden><button class="btn primary" id="pickFile">Elegir archivo…</button></div>'
     +'<div class="block opt"><h4>Desde texto</h4><p>Si guardaste la copia como texto en Notas, pégala aquí.</p><textarea id="importTxt" placeholder="Pega aquí el texto de la copia"></textarea><button class="btn soft" id="loadTxt">Cargar texto</button></div>'
-    +'<div id="importMsg"></div><p class="hint">Recuperar una copia sustituye lo que hay ahora en este móvil.</p>';
+    +'<div id="importMsg"></div><p class="hint">Recuperar una copia añade lo que falta y rellena lo que está en blanco. Lo que ya está anotado en este móvil no se toca.</p>';
   $('overlay').innerHTML='<div class="scrim" data-close></div><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sh-t"><div class="sheet-in">'
     +'<div class="sheet-head"><button type="button" class="btn ghost" data-close>Cerrar</button><h3 id="sh-t">Copia de seguridad</h3><span style="width:70px"></span></div>'
     +'<div class="seg two-seg" role="group" aria-label="Acción"><button type="button" data-bk="guardar" aria-pressed="'+(bkTab==='guardar')+'">Guardar copia</button><button type="button" data-bk="recuperar" aria-pressed="'+(bkTab==='recuperar')+'">Recuperar copia</button></div>'
     +(bkTab==='guardar'?g:r)+'</div></div>';
   document.body.style.overflow='hidden';
 }
-function backupJson(){return JSON.stringify({app:'comida-app',version:1,exportado:new Date().toISOString(),ingestas:Object.values(data.ingestas),dias:data.dias},null,2);}
+function backupJson(){return JSON.stringify({app:'comida-app',version:2,exportado:new Date().toISOString(),ingestas:Object.values(data.ingestas),dias:data.dias},null,2);}
 async function saveBackup(){
   const json=backupJson(),name='comida-app-copia-'+TODAY+'.json';
   const dl=await getDownloader();
@@ -660,15 +725,50 @@ function parseImport(text){
     try{
       const o=JSON.parse(String(text).trim());
       if(o.app!=='comida-app'||!Array.isArray(o.ingestas))throw 0;
-      pendingImport=o;
-      $('importMsg').innerHTML='<div class="confirm"><span>Esta copia tiene <b>'+o.ingestas.length+' comidas</b> (copia del '+esc(new Date(o.exportado).toLocaleDateString('es-ES'))+'). Sustituirá las '+Object.keys(data.ingestas).length+' que hay ahora.</span><div class="row2"><button class="btn primary" id="doImport">Recuperar</button><button class="btn ghost" id="cancelImport">Cancelar</button></div></div>';
+      const m=mergeImport(o),fecha=esc(new Date(o.exportado).toLocaleDateString('es-ES'));
+      const pl=(n,a,b)=>n+' '+(n===1?a:b);
+      if(!m.nuevas&&!m.completadas&&!m.dias){pendingImport=null;$('importMsg').innerHTML='<div class="confirm"><span>Este móvil ya tiene todo lo que hay en esta copia (del '+fecha+'). No hay nada que añadir.</span></div>';return;}
+      pendingImport=m;
+      const q=[];if(m.nuevas)q.push('<b>'+pl(m.nuevas,'comida nueva','comidas nuevas')+'</b>');if(m.completadas)q.push('huecos en <b>'+pl(m.completadas,'comida','comidas')+'</b>');if(m.dias)q.push('<b>'+pl(m.dias,'cierre de día','cierres de día')+'</b>');
+      $('importMsg').innerHTML='<div class="confirm"><span>Copia del '+fecha+'. Se añade: '+q.join(', ')+'. Lo que ya está anotado no se cambia.</span><div class="row2"><button class="btn primary" id="doImport">Recuperar</button><button class="btn ghost" id="cancelImport">Cancelar</button></div></div>';
     }catch(e){$('importMsg').innerHTML='<p class="status" style="color:var(--danger)">Eso no es una copia de Comida App. Usa el archivo .json o el texto completo que guardaste desde «Guardar copia».</p>';}
   }
 }
+/* Fusionar (decidido el 24-09-2026): lo que no está se añade y lo que está en blanco se
+   rellena; lo que ya tiene datos en este móvil no se toca. Se prepara sobre una copia de
+   los datos y sólo se guarda al confirmar. */
+const vacio=v=>v==null||v===''||(Array.isArray(v)&&!v.length);
+function rellenar(cur,inc){
+  let n=0;
+  Object.keys(inc).forEach(k=>{if(k==='id'||k==='ejemplo')return;if(vacio(cur[k])&&!vacio(inc[k])){cur[k]=inc[k];n++;}});
+  if(cur.aguaTexto&&cur.agua!=null){delete cur.aguaTexto;}
+  return n;
+}
+function mergeImport(o){
+  const next=JSON.parse(JSON.stringify(data));
+  if(next.ejemplos){
+    Object.keys(next.ingestas).forEach(k=>{if(next.ingestas[k].ejemplo)delete next.ingestas[k];});
+    Object.keys(next.dias).forEach(k=>{if(next.dias[k].ejemplo)delete next.dias[k];});
+    next.ejemplos=false;
+  }
+  let nuevas=0,completadas=0,dias=0;
+  o.ingestas.forEach(x=>{
+    if(!x||!x.id||!x.fecha)return;
+    const inc=Object.assign(ingVacia(),x);delete inc.ejemplo;
+    const cur=next.ingestas[x.id];
+    if(!cur){next.ingestas[x.id]=inc;nuevas++;}
+    else if(rellenar(cur,inc))completadas++;
+  });
+  Object.entries(o.dias||{}).forEach(([f,di])=>{
+    const inc=normDia(Object.assign({},di));delete inc.ejemplo;
+    if(!next.dias[f]){if(Object.keys(inc).length){next.dias[f]=inc;dias++;}}
+    else if(rellenar(next.dias[f],inc))dias++;
+  });
+  if(o.exportado&&(!next.ultimaCopia||o.exportado>next.ultimaCopia))next.ultimaCopia=o.exportado;
+  return {next,nuevas,completadas,dias};
+}
 function doImport(){
-  const o=pendingImport,ing={};
-  o.ingestas.forEach(x=>{if(x&&x.id&&x.fecha)ing[x.id]=Object.assign({emoAntes:[],emoAntesOtra:'',pensAntes:'',emoDespues:[],emoDespuesOtra:'',pensDespues:'',energia:'',energiaOtro:'',sintomas:[],sintomasOtros:''},x);});
-  data={ingestas:ing,dias:o.dias||{},ejemplos:false,ultimaCopia:o.exportado};
+  data=pendingImport.next;
   save();pendingImport=null;close();render();toast('Copia recuperada');
 }
 
@@ -721,6 +821,8 @@ document.addEventListener('click',e=>{
     return;
   }
   if(t.hasAttribute('data-close')){close();return;}
+  const stp=t.closest('.step');
+  if(stp){stepBy(stp.dataset.step,t.hasAttribute('data-inc')?1:-1);return;}
   const box=t.parentElement&&t.parentElement.dataset.pick?t.parentElement:null;
   if(box){
     const multi=box.dataset.multi==='1',v=t.dataset.v,on=t.getAttribute('aria-pressed')==='true';

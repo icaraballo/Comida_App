@@ -219,7 +219,7 @@ function pintarDia(fecha) {
   const meta = [
     d.sueno_horas != null && `durmió ${d.sueno_horas} h${d.sueno_calidad ? ` (${d.sueno_calidad})` : ''}`,
     d.agua_litros != null && `${d.agua_litros} L de agua`,
-    d.actividad && `actividad: ${d.actividad}`,
+    (d.actividad || d.actividad_horas != null) && `actividad: ${[d.actividad_horas != null && `${d.actividad_horas} h`, d.actividad].filter(Boolean).join(', ')}`,
   ].filter(Boolean).join(' · ');
 
   const secciones = [
