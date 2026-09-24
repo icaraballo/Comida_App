@@ -142,6 +142,8 @@ details.fold > summary::-webkit-details-marker{display:none}
 .fold[open] .chev{transform:rotate(180deg)}
 details.reg > summary.summary{margin-bottom:0}
 details.reg[open] > summary.summary{margin-bottom:12px}
+details.reg + .sub-h{margin-top:22px}
+.sub-h:first-child{margin-top:4px}
 .summary .chev{margin-left:auto;align-self:center}
 .summary .pend + .chev{margin-left:8px}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
@@ -355,6 +357,7 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const byDay=f=>Object.values(data.ingestas).filter(x=>x.fecha===f).sort((a,b)=>(a.hora||'99').localeCompare(b.hora||'99'));
 const countDay=f=>Object.values(data.ingestas).reduce((n,x)=>n+(x.fecha===f),0);
 const hasAfter=x=>x.emoDespues.length||x.emoDespuesOtra||x.pensDespues||x.energia||x.sintomas.length||x.sintomasOtros;
+const completa=x=>!!(x.alimentos&&hasBefore(x)&&hasAfter(x));
 const hasBefore=x=>x.hambre||x.lugar||x.pantalla||x.emoAntes.length||x.emoAntesOtra||x.pensAntes;
 function ingVacia(){return {hambre:'',lugar:'',pantalla:'',emoAntes:[],emoAntesOtra:'',pensAntes:'',emoDespues:[],emoDespuesOtra:'',pensDespues:'',energia:'',energiaOtro:'',sintomas:[],sintomasOtros:''};}
 const fmtNum=n=>String(Math.round(n*100)/100).replace('.',',');
@@ -435,7 +438,7 @@ function mealCard(x){
   let meta=[];if(en)meta.push('Energía '+en.toLowerCase());if(sint.length)meta.push(sint.join(', ').toLowerCase());
   const desp=hd?'<div class="half d"><h5>Después</h5><div class="emos">'+esc(d.join(' · ')||'—')+'</div>'+(x.pensDespues?'<div class="th">«'+esc(x.pensDespues)+'»</div>':'')+(meta.length?'<div class="meta">'+esc(meta.join(' · '))+'</div>':'')+'</div>'
     :'<div class="half empty"><h5>Después</h5><div class="emos">Sin rellenar</div></div>';
-  const pend=!hd?'<span class="pending">Falta el después</span>':!ha?'<span class="pending">Falta el antes</span>':'';
+  const pend=!ha&&!hd?'<span class="pending">Falta el antes y el después</span>':!hd?'<span class="pending">Falta el después</span>':!ha?'<span class="pending">Falta el antes</span>':!x.alimentos?'<span class="pending">Faltan los alimentos</span>':'';
   return '<button class="meal t-'+x.tipo+'" data-edit="'+x.id+'">'
     +'<div class="head"><span class="tlabel"><i></i>'+esc(TIPO_LBL[x.tipo])+'</span><span class="time">'+esc(x.hora||'--:--')+'</span>'+pend+'</div>'
     +'<div class="food'+(x.alimentos?'':' none')+'">'+esc(x.alimentos||'Sin alimentos anotados')+'</div>'
@@ -444,16 +447,16 @@ function mealCard(x){
 function renderDia(){
   const items=byDay(ui.cursor);
   const used=new Set(items.map(x=>x.tipo));
-  const pend=items.filter(x=>!hasAfter(x)||!hasBefore(x)).length;
-  const nums='<div class="nums"><span class="big">'+items.length+'</span><span class="of">registro'+(items.length===1?'':'s')+'</span>'+(pend?'<span class="pend">'+pend+' por completar</span>':'');
-  /* Lo registrado va plegado (se ve en las píldoras de la cabecera); lo pendiente, siempre a la vista. */
-  let h;
-  if(!items.length)h='<section class="summary" aria-label="Resumen del día">'+nums+'</div></section>';
-  else{
-    const chips='<div class="chips">'+items.map(x=>'<span class="chip t-'+x.tipo+'"><i></i>'+esc(TIPO_LBL[x.tipo])+'<span>'+esc(x.hora||'')+'</span></span>').join('')+'</div>';
-    h='<details class="fold reg" data-fold="reg"'+(ui.abiertos.reg?' open':'')+'><summary class="summary" aria-label="Registros del día">'+nums+'<span class="chev" aria-hidden="true">⌄</span></div>'+chips+'</summary>'
-      +'<div class="list">'+items.map(mealCard).join('')+'</div></details>';
+  /* Lo completo baja al desplegable; lo que falta (a medias o sin registrar) queda a la vista. */
+  const hechas=items.filter(completa),medias=items.filter(x=>!completa(x));
+  let h='';
+  if(hechas.length){
+    const chips='<div class="chips">'+hechas.map(x=>'<span class="chip t-'+x.tipo+'"><i></i>'+esc(TIPO_LBL[x.tipo])+'<span>'+esc(x.hora||'')+'</span></span>').join('')+'</div>';
+    h+='<details class="fold reg" data-fold="reg"'+(ui.abiertos.reg?' open':'')+'><summary class="summary" aria-label="Comidas completas">'
+      +'<div class="nums"><span class="big">'+hechas.length+'</span><span class="of">'+(hechas.length===1?'completa':'completas')+'</span><span class="chev" aria-hidden="true">⌄</span></div>'+chips+'</summary>'
+      +'<div class="list">'+hechas.map(mealCard).join('')+'</div></details>';
   }
+  if(medias.length)h+='<div class="sub-h">Por completar</div><div class="list">'+medias.map(mealCard).join('')+'</div>';
   h+='<div class="sub-h">Por registrar</div><div class="slots">';
   TIPOS.filter(([k])=>k!=='picoteo'&&!used.has(k)).forEach(([k,l])=>{
     h+='<button class="slot t-'+k+'" data-new="'+k+'"><span class="dot"></span><span><b>'+l+'</b> · sin registrar</span><span class="add" aria-hidden="true">＋</span></button>';
@@ -475,7 +478,7 @@ function renderSemana(){
     h+='<button class="wrow'+(f===TODAY?' is-today':'')+'" data-day="'+f+'"><span class="d"><span>'+DIAS[d.getDay()].slice(0,3)+'</span><b>'+d.getDate()+'</b></span><span class="pips">';
     ['desayuno','media_manana','comida','merienda','cena'].forEach(t=>{
       const x=items.find(y=>y.tipo===t);
-      h+='<span class="pip t-'+t+' '+(x?(hasAfter(x)&&hasBefore(x)?'on':'half'):'')+'" title="'+TIPO_LBL[t]+'">'+TIPO_CORTO[t]+'</span>';
+      h+='<span class="pip t-'+t+' '+(x?(completa(x)?'on':'half'):'')+'" title="'+TIPO_LBL[t]+'">'+TIPO_CORTO[t]+'</span>';
     });
     h+='</span><span class="extra">'+(pic?'+'+pic+' pic.':'')+'</span></button>';
   }
