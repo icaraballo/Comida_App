@@ -8,11 +8,12 @@ Empezar por `Comida App.md`. Este repo es sólo la implementación.
 
 | En el vault | Qué es |
 |---|---|
-| `Diseño/CA-Especificacion-App-Registro.md` | **La app de registro**: pantallas, datos, exportación, diseño y plan. Con su prototipo `CA-Prototipo-v0.4.html` |
+| `Diseño/CA-Especificacion-App-Registro.md` | **La app de registro**: pantallas, datos, exportación, diseño y plan. Con su prototipo `CA-Prototipo-v0.4.html` (salvo en lo que cambia D13, donde manda `app/`) |
 | `Tareas/CA-Instrucciones.md` | Principios no negociables, qué **no** construir, cómo registrar y, al final, el **banco de ideas** (decisiones abiertas y pendientes) |
 | `Diseño/CA-Esquema-de-Datos.md` | **El contrato de datos.** Manda sobre el código |
-| `Diseño/CA-Decisiones.md` | Las doce decisiones (D1–D12), con su motivo |
+| `Diseño/CA-Decisiones.md` | Las trece decisiones (D1–D13), con su motivo |
 | `Diseño/CA-Analisis.md` | Las cuatro preguntas pre-registradas (Q1–Q4) |
+| `Versiones/` | Histórico de builds: `CA-2026-09-v1` y `CA-2026-09-v0.5` |
 | `QA/` | Bugs activos, sin verificar, resueltos y compatibilidad |
 | `fixtures/` | Contrato de aceptación del parser y del validador |
 
@@ -24,22 +25,32 @@ Empezar por `Comida App.md`. Este repo es sólo la implementación.
 | 2 | `parser/` — dataframe *tidy*, parquet y SQLite | ✅ v1 |
 | 3 | `validar.py` — erratas, vocabulario y campos ausentes | ✅ v1 |
 | — | `visor/` — página local de revisión (calendario + día) | ✅ v1 |
-| 4 | `app/` — captura en el móvil | ⏳ prototipo v0.4, tal cual; después, PWA |
-| 5 | Calendario de revisión (Día, Semana, Mes, Año) | ⏳ dentro de `app/` |
+| 4 | `app/` — captura en el móvil | 🟡 **v0.5** publicada (prototipo v0.4 + D13); después, PWA |
+| 5 | Calendario de revisión (Día, Semana, Mes, Año) | 🟡 dentro de `app/` |
 | 6 | Vistas de análisis (Q1–Q4) | 🔒 después de 4–6 semanas de registro |
 
 Desde el 23-09-2026 la fuente de verdad es la app (D1 revisada) y la Fase 0 en
 Obsidian queda sustituida por registrar con el prototipo (D10). `validar.py`,
 `parsear.py` y el visor siguen sirviendo sobre los `.md` **exportados** desde la app.
 
+Los siete puntos abiertos de la especificación se cerraron el 24-09-2026 (D13) y están en
+la v0.5. Lo siguiente, en orden (banco de ideas §4.2 de `Tareas/CA-Instrucciones.md`):
+modelo canónico con los vocabularios leídos del esquema, fuentes empaquetadas, IndexedDB,
+*service worker* y tests de los formatos de exportación.
+
 ## La app (`app/`)
 
-`app/index.html` es el prototipo v0.4, copiado sin cambios: un solo fichero, se
-abre en el navegador tal cual. Publicado con GitHub Pages en
+`app/index.html` es la **v0.5**: el prototipo v0.4 más lo que decide D13 (hambre, dónde y
+pantalla antes de comer; contadores de agua, actividad y sueño; resumen "N registros · M por
+completar"; recuperar copia fusionando sin pisar, copias `version: 2` que siguen leyendo las
+`version: 1`; número de registros en mes y año). Un solo fichero, se abre en el navegador
+tal cual. Publicado con GitHub Pages en
 https://icaraballo.github.io/Comida_App/app/ — el repo es público de momento para
 poder servirlo; no lleva datos reales. Guarda en el `localStorage` del navegador, así que
 cada móvil tiene sus propios datos y no salen de ahí salvo al exportar o guardar
-copia. Todavía carga las fuentes de Google Fonts (se arregla en la PWA). Para guardar
+copia. Todavía carga las fuentes de Google Fonts, y los vocabularios están escritos en el
+JS guardando las etiquetas visibles en vez de los valores canónicos del esquema: las dos
+cosas se arreglan camino de la PWA. Para guardar
 archivos usa la función de Claude.ai si está dentro; fuera, en el móvil, la hoja
 de compartir del sistema y, si no, una descarga normal (`getDownloader()`).
 
@@ -141,7 +152,7 @@ Las dos corrompen en silencio, sin dar error, y las dos están cubiertas:
 - `hambre_antes: no` sin comillas se lee como el **booleano `False`** (la lista
   de PyYAML incluye `yes`/`no`/`on`/`off`), y `no` es un valor del vocabulario
   `hambre`. Se deshace en `esquema.destrampar()`, en un único sitio.
-  **Decisión abierta**, ver el banco de ideas de `Tareas/CA-Instrucciones.md`, §1.1.
+  **Decidido** (D13, opción B): la exportación a markdown de la app pone las comillas.
 
 ## Privacidad
 
