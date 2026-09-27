@@ -25,7 +25,7 @@ Empezar por `Comida App.md`. Este repo es sólo la implementación.
 | 2 | `parser/` — dataframe *tidy*, parquet y SQLite | ✅ v1 |
 | 3 | `validar.py` — erratas, vocabulario y campos ausentes | ✅ v1 |
 | — | `visor/` — página local de revisión (calendario + día) | ✅ v1 |
-| 4 | `app/` — captura en el móvil | 🟡 **v0.6** publicada (rediseño «Sereno», D15); después, PWA |
+| 4 | `app/` — captura en el móvil | 🟡 **v0.7** publicada (rediseño «Sereno», D15, y PIN opcional, D14); después, PWA |
 | 5 | Calendario de revisión (Hoy con la semana; Mes y Año) | 🟡 dentro de `app/` |
 | 6 | Vistas de análisis (Q1–Q4) | 🔒 después de 4–6 semanas de registro |
 
@@ -40,13 +40,16 @@ modelo canónico con los vocabularios leídos del esquema, fuentes empaquetadas,
 
 ## La app (`app/`)
 
-`app/index.html` es la **v0.6**: el rediseño «Sereno» de D15 sobre la v0.5 (prototipo v0.4
-más D13). Dos secciones con una barra flotante abajo: **Hoy** (la semana en una tira con su
+`app/index.html` es la **v0.7**: el rediseño «Sereno» de D15 (v0.6) sobre la v0.5 (prototipo v0.4
+más D13), más el **PIN opcional** de D14. Dos secciones con una barra flotante abajo: **Hoy** (la semana en una tira con su
 número ISO y el día como una línea de tiempo con un icono por comida) y **Calendario** (Mes
 con la columna de semanas, y Año), con **Registrar** en el centro. La cabecera saluda por el
 nombre y lleva Exportar y **Tu espacio** (nombre y copia de seguridad; la copia lleva
 `perfil: { nombre }`). Los campos de los formularios, los formatos de exportación y la
-fusión de copias no cambian respecto a la v0.5. Un solo fichero, se abre en el navegador
+fusión de copias no cambian respecto a la v0.5. El PIN (v0.7) es de 4 cifras, opcional y
+apagado por defecto: tapa la app al abrirla y al volver a ella, **no cifra** los datos; se guarda
+como hash PBKDF2 y nunca va en la copia. Necesita https o `localhost` (Web Crypto): para
+probarlo en local, `python3 -m http.server` dentro de `app/`, no `file://`. Un solo fichero, se abre en el navegador
 tal cual. Publicado con GitHub Pages en
 https://icaraballo.github.io/Comida_App/app/ — el repo es público de momento para
 poder servirlo; no lleva datos reales. Guarda en el `localStorage` del navegador, así que

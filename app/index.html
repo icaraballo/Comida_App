@@ -1,3 +1,4 @@
+<meta charset="utf-8">
 <title>Comida App</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -289,9 +290,36 @@ textarea{min-height:64px;resize:vertical}
 .privacy .ico{color:var(--accent);margin-top:1px}
 .ver{font-size:12px;color:var(--ink-3);text-align:center;margin:10px 0 0}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(100px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:14px;z-index:30;white-space:nowrap}
+/* PIN (D14): pantalla de desbloqueo, teclado propio y el velo al salir de la app */
+#lock{position:fixed;inset:0;z-index:60;background:var(--bg);overflow:auto;display:grid;place-items:center;padding:calc(24px + env(safe-area-inset-top,0px)) 16px calc(24px + env(safe-area-inset-bottom,0px))}
+body.locked .app,body.locked .bar,body.locked .fade,body.locked #overlay,body.locked #toastHost{display:none}
+body.veil .app,body.veil .bar,body.veil .fade,body.veil #overlay{visibility:hidden}
+.pinbox{display:grid;justify-items:center;gap:14px;width:100%;max-width:340px;text-align:center}
+.pinbox .lk{width:64px;height:64px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center}
+.pinbox .lk .ico{width:28px;height:28px}
+.pinbox h1{margin:0;font-family:var(--f-display);font-weight:600;font-size:34px;letter-spacing:-.02em;overflow-wrap:anywhere}
+.pinbox h2{margin:0;font-family:var(--f-display);font-weight:600;font-size:22px}
+.pinbox p{margin:0;font-size:14px;color:var(--ink-2)}
+.dots{display:flex;gap:16px;margin:6px 0 2px}
+.dots i{width:14px;height:14px;border-radius:50%;border:2px solid var(--accent)}
+.dots i.on{background:var(--accent)}
+.pinmsg{min-height:20px;font-size:14px;font-weight:700;color:var(--danger)}
+.pinmsg.ok{color:var(--ink-2);font-weight:400}
+.pad{display:grid;grid-template-columns:repeat(3,72px);gap:14px 22px;justify-content:center;margin-top:4px}
+.pad button{width:72px;height:72px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-family:var(--f-display);font-weight:500;font-size:28px;display:grid;place-items:center;padding:0;font-variant-numeric:tabular-nums}
+.pad button:disabled{opacity:.4;cursor:default}
+.pad button.del{border-color:transparent;background:transparent}
+.pad button.del .ico{width:26px;height:26px}
+.pinlink{border:0;background:none;color:var(--accent);font-weight:700;font-size:14px;padding:10px;min-height:44px}
+.forgot{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:14px;display:grid;gap:12px;font-size:14px;color:var(--ink-2);text-align:left}
+.pinwarn{background:var(--warn-soft);color:var(--ink);border-radius:16px;padding:14px;font-size:15px;text-align:left}
+.pin-st{font-size:13px;color:var(--ink-2)}
+.pin-st b{color:var(--accent)}
 @media (prefers-reduced-motion:no-preference){
   .sheet{animation:up .22s ease-out}
   @keyframes up{from{transform:translateY(24px);opacity:.6}to{transform:none;opacity:1}}
+  .dots.shake{animation:shake .35s ease}
+  @keyframes shake{20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
 }
 </style>
 
@@ -309,6 +337,8 @@ textarea{min-height:64px;resize:vertical}
 <path id="i-persona" d="M12 4a4 4 0 1 0 0 8a4 4 0 1 0 0-8 M4 21a8 8 0 0 1 16 0"/>
 <path id="i-descarga" d="M12 3v12 M7 10l5 5 5-5 M4 17v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-1"/>
 <path id="i-escudo" d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/>
+<path id="i-candado" d="M6 11h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1z M8 11V7a4 4 0 0 1 8 0v4"/>
+<path id="i-borrar" d="M9 5h11a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H9l-6-7z M12 9l6 6 M18 9l-6 6"/>
 </defs></svg>
 
 <div class="app">
@@ -324,10 +354,11 @@ textarea{min-height:64px;resize:vertical}
 </nav>
 <div id="overlay"></div>
 <div id="toastHost"></div>
+<div id="lock" role="dialog" aria-modal="true" aria-label="Desbloquear" hidden></div>
 
 <script>
 (function(){
-const VERSION='v0.6';
+const VERSION='v0.7';
 const STORE='comida-app-proto-v1';
 const TIPOS=[['desayuno','Desayuno'],['media_manana','Media mañana'],['comida','Comida'],['merienda','Merienda'],['cena','Cena'],['picoteo','Picoteo']];
 const TIPO_LBL=Object.fromEntries(TIPOS);
@@ -365,8 +396,17 @@ const TODAY=iso(new Date());
 /* ---------- estado ---------- */
 const uid=()=>Math.random().toString(36).slice(2,10);
 let data=load();
-let perfil={nombre:''};
-try{const p=JSON.parse(localStorage.getItem(STORE+'-perfil')||'null');if(p&&typeof p.nombre==='string')perfil.nombre=p.nombre;}catch(e){}
+/* Perfil (D14): nombre y PIN. El PIN nunca se guarda en claro: sal + hash PBKDF2. */
+let perfil={nombre:'',pin:null,bloqueo:'5min',fallos:0,esperaHasta:0};
+try{
+  const p=JSON.parse(localStorage.getItem(STORE+'-perfil')||'null');
+  if(p){
+    if(typeof p.nombre==='string')perfil.nombre=p.nombre;
+    if(p.pin&&p.pin.salt&&p.pin.hash&&p.pin.iter)perfil.pin={salt:p.pin.salt,hash:p.pin.hash,iter:p.pin.iter};
+    if(p.bloqueo==='salir')perfil.bloqueo='salir';
+    perfil.fallos=Number(p.fallos)||0;perfil.esperaHasta=Number(p.esperaHasta)||0;
+  }
+}catch(e){}
 let ui={sec:'hoy',cal:'mes',cursor:TODAY,calCursor:TODAY.slice(0,8)+'01',posponer:null};
 try{const u=JSON.parse(localStorage.getItem(STORE+'-ui')||'null');if(u){if(u.sec==='cal')ui.sec='cal';if(u.cal==='ano')ui.cal='ano';if(u.posponer)ui.posponer=u.posponer;}}catch(e){}
 
@@ -824,11 +864,20 @@ function openMe(){
     +'<div class="me-top"><div class="av" id="meAv">'+(me?esc(me):ico('persona'))+'</div><div class="nm" id="meNm"'+(perfil.nombre?'':' hidden')+'>'+esc(perfil.nombre)+'</div>'
     +'<div class="st">'+n+(n===1?' comida':' comidas')+' y '+nd+(nd===1?' cierre':' cierres')+' en este móvil</div></div>'
     +'<div class="block"><div class="field"><label for="f-nombre">Tu nombre</label><input type="text" id="f-nombre" maxlength="30" autocomplete="given-name" placeholder="Opcional" value="'+esc(perfil.nombre)+'"></div></div>'
+    +pinBlock()
     +'<div class="block"><div class="bk-h"><span class="ic">'+ico('descarga')+'</span><div><h4>Copia de seguridad</h4><small>'+esc(ultimaCopiaTxt())+'</small></div></div>'
     +'<div class="row2"><button class="btn primary" data-bk="guardar">Guardar copia</button><button class="btn sec" data-bk="recuperar">Recuperar</button></div></div>'
     +'<p class="privacy">'+ico('escudo')+'<span>Tus datos se guardan solo en este móvil. No hay servidor ni cuentas: nadie más puede verlos.</span></p>'
     +'<p class="ver">Comida App '+VERSION+'</p></div></div>';
   document.body.style.overflow='hidden';
+}
+function pinBlock(){
+  const on=!!perfil.pin;
+  return '<div class="block"><div class="bk-h"><span class="ic">'+ico('candado')+'</span><div><h4>PIN</h4><small>'+(on?'Activado':'Desactivado')+'</small></div></div>'
+    +(on?'<div class="row2"><button class="btn sec" data-pinflow="cambiar">Cambiar PIN</button><button class="btn sec" data-pinflow="quitar">Quitar PIN</button></div>'
+      +'<div class="field"><span class="lbl" id="lb-bloqueo">Pedir el PIN</span><div class="seg" role="group" aria-labelledby="lb-bloqueo"><button type="button" data-bloqueo="salir" aria-pressed="'+(perfil.bloqueo==='salir')+'">Nada más salir</button><button type="button" data-bloqueo="5min" aria-pressed="'+(perfil.bloqueo==='5min')+'">Tras 5 min fuera</button></div></div>'
+      :'<p class="pin-st">Tapa la app para que nadie que coja el móvil vea tus registros. No se pide al registrar.</p><div class="row2"><button class="btn primary" data-pinflow="activar">Activar PIN</button></div>')
+    +'</div>';
 }
 function setNombre(v){
   v=v.replace(/\s+/g,' ').trim().slice(0,30);
@@ -931,7 +980,134 @@ function doImport(){
   save();pendingImport=null;close();render();toast('Copia recuperada');
 }
 
-function close(){$('overlay').innerHTML='';document.body.style.overflow='';draft=null;}
+/* ---------- PIN (D14) ----------
+   Nivel 1: tapa la app, no cifra los datos (el cifrado es el banco de ideas §4.5).
+   PBKDF2-SHA-256 con Web Crypto: solo existe en https o localhost, no en file://. */
+const PIN_ITER=150000,FALLOS_MAX=5,ESPERA_MS=30000,FUERA_MS=5*60*1000;
+const hayCrypto=()=>!!(window.crypto&&crypto.subtle);
+const b64=buf=>btoa(String.fromCharCode(...new Uint8Array(buf)));
+const unb64=t=>Uint8Array.from(atob(t),c=>c.charCodeAt(0));
+async function derivar(pin,salt,iter){
+  const k=await crypto.subtle.importKey('raw',new TextEncoder().encode(pin),'PBKDF2',false,['deriveBits']);
+  return b64(await crypto.subtle.deriveBits({name:'PBKDF2',hash:'SHA-256',salt,iterations:iter},k,256));
+}
+async function crearPin(pin){const salt=crypto.getRandomValues(new Uint8Array(16));return {salt:b64(salt),hash:await derivar(pin,salt,PIN_ITER),iter:PIN_ITER};}
+async function pinCorrecto(pin){const p=perfil.pin;return !!p&&(await derivar(pin,unb64(p.salt),p.iter))===p.hash;}
+
+/* Teclado: un solo teclado activo a la vez (el del bloqueo o el de un flujo). */
+let teclado=null;
+const padHtml=()=>'<div class="dots" id="pinDots" role="status" aria-live="polite" aria-label="0 de 4"><i></i><i></i><i></i><i></i></div><div class="pinmsg" id="pinMsg"></div>'
+  +'<div class="pad" id="pinPad">'+[1,2,3,4,5,6,7,8,9].map(n=>'<button type="button" data-key="'+n+'" aria-label="'+n+'">'+n+'</button>').join('')
+  +'<span></span><button type="button" data-key="0" aria-label="0">0</button><button type="button" class="del" data-key="del" aria-label="Borrar">'+ico('borrar')+'</button></div>';
+function padStart(cb,msg,ok){teclado={buf:'',busy:false,cb};pintarPad();if(msg)pinMsg(msg,ok);}
+function pintarPad(){
+  const d=$('pinDots');if(!d||!teclado)return;
+  [...d.children].forEach((i,k)=>i.classList.toggle('on',k<teclado.buf.length));
+  d.setAttribute('aria-label',teclado.buf.length+' de 4');
+}
+function pinMsg(t,ok){const m=$('pinMsg');if(m){m.textContent=t||'';m.classList.toggle('ok',!!ok);}}
+function padKey(k){
+  if(!teclado||teclado.busy||esperando())return;
+  if(k==='del')teclado.buf=teclado.buf.slice(0,-1);else if(teclado.buf.length<4)teclado.buf+=k;
+  pintarPad();
+  if(teclado.buf.length===4){teclado.busy=true;const v=teclado.buf;Promise.resolve(teclado.cb(v)).catch(()=>padFallo('No se ha podido comprobar el PIN'));}
+}
+function padFallo(msg){
+  const d=$('pinDots');
+  if(d){d.classList.remove('shake');void d.offsetWidth;d.classList.add('shake');}
+  pinMsg(msg);
+  setTimeout(()=>{if(!teclado)return;teclado.buf='';teclado.busy=false;pintarPad();},350);
+}
+
+/* Bloqueo */
+let bloqueada=false,salida=0,esperaTimer=null;
+const esperando=()=>bloqueada&&perfil.esperaHasta>Date.now();
+function bloquear(){
+  if(!perfil.pin)return;
+  bloqueada=true;document.body.classList.add('locked');document.body.classList.remove('veil');
+  const L=$('lock');L.hidden=false;
+  L.innerHTML='<div class="pinbox"><div class="lk">'+ico('candado')+'</div><h1>'+(perfil.nombre?'Hola, '+esc(perfil.nombre):'Hola')+'</h1>'
+    +(hayCrypto()?padHtml()+'<button class="pinlink" id="forgotBtn">¿Has olvidado el PIN?</button><div id="forgotBox"></div>'
+      :'<p>Para desbloquearla, abre la app desde su dirección https (GitHub Pages).</p>')+'</div>';
+  if(hayCrypto()){padStart(desbloquearCon);tickEspera();}
+}
+async function desbloquearCon(pin){
+  if(await pinCorrecto(pin)){
+    perfil.fallos=0;perfil.esperaHasta=0;savePerfil();
+    bloqueada=false;teclado=null;document.body.classList.remove('locked');$('lock').hidden=true;$('lock').innerHTML='';render();
+    return;
+  }
+  perfil.fallos=(perfil.fallos||0)+1;
+  if(perfil.fallos>=FALLOS_MAX){perfil.fallos=0;perfil.esperaHasta=Date.now()+ESPERA_MS;}
+  savePerfil();padFallo('PIN incorrecto');tickEspera();
+}
+/* Tras 5 fallos seguidos, 30 s sin teclado y con cuenta atrás. Sobrevive a recargar. */
+function tickEspera(){
+  clearInterval(esperaTimer);
+  const paint=()=>{
+    const w=esperando(),left=Math.ceil((perfil.esperaHasta-Date.now())/1000);
+    document.querySelectorAll('#pinPad button').forEach(b=>b.disabled=w);
+    if(w)pinMsg('Espera '+left+' s');
+    else{clearInterval(esperaTimer);if($('pinMsg')&&/^Espera/.test($('pinMsg').textContent))pinMsg('');}
+  };
+  paint();if(esperando())esperaTimer=setInterval(paint,1000);
+}
+function borrarTodo(){
+  [STORE,STORE+'-ui',STORE+'-perfil',STORE+'-fmt'].forEach(k=>{try{localStorage.removeItem(k);}catch(e){}});
+  location.reload();
+}
+document.addEventListener('visibilitychange',()=>{
+  if(!perfil.pin)return;
+  if(document.visibilityState==='hidden'){
+    salida=Date.now();
+    if(perfil.bloqueo==='salir')bloquear();else if(!bloqueada)document.body.classList.add('veil');
+  }else if(!bloqueada){
+    if(perfil.bloqueo==='salir'||Date.now()-salida>FUERA_MS)bloquear();
+    else document.body.classList.remove('veil');
+  }
+});
+
+/* Flujos de Tu espacio: activar, cambiar y quitar. */
+let flujo=null;
+function openPinFlow(mode){
+  if(!hayCrypto()){toast('El PIN necesita la app publicada (https)');return;}
+  flujo={mode,first:''};
+  pasoPin(mode==='activar'?(perfil.nombre?'elegir':'nombre'):'actual');
+}
+function pasoPin(step,msg,ok){
+  flujo.step=step;teclado=null;
+  const tit={activar:'Activar PIN',cambiar:'Cambiar PIN',quitar:'Quitar PIN'}[flujo.mode];
+  let body='';
+  if(step==='nombre')body='<h2>¿Cómo te llamas?</h2><p>Saldrá al abrir la app.</p><div class="field" style="width:100%;text-align:left"><label for="f-pnombre">Tu nombre</label><input type="text" id="f-pnombre" maxlength="30" autocomplete="given-name"></div><button class="btn primary" id="pinNombreOk">Seguir</button>';
+  else if(step==='aviso')body='<h2>Antes de activarlo</h2><div class="pinwarn">Si olvidas el PIN, la única forma de entrar es borrar los datos de este móvil y recuperar una copia. Guarda una copia antes.</div>'
+    +'<p class="pin-st">'+esc(ultimaCopiaTxt())+'</p><div class="row2" style="justify-content:center"><button class="btn sec" id="pinCopia">'+ico('descarga')+'Guardar copia ahora</button><button class="btn primary" id="pinActivar">Activar</button></div>';
+  else body='<h2>'+{actual:'Escribe tu PIN actual',elegir:'Elige un PIN de 4 cifras',repetir:'Repítelo'}[step]+'</h2>'+padHtml();
+  $('overlay').innerHTML='<div class="scrim" data-close></div><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sh-t"><div class="grab" aria-hidden="true"></div><div class="sheet-in">'
+    +'<div class="sheet-head"><button type="button" class="btn ghost" id="pinCancel">Cancelar</button><h3 id="sh-t">'+tit+'</h3><span class="sp"></span></div>'
+    +'<div class="pinbox" style="margin:8px auto 12px">'+body+'</div></div></div>';
+  document.body.style.overflow='hidden';
+  if(step==='nombre')$('f-pnombre').focus();
+  if(step==='actual')padStart(async pin=>{
+    if(!(await pinCorrecto(pin))){padFallo('PIN incorrecto');return;}
+    if(flujo.mode==='quitar'){perfil.pin=null;perfil.fallos=0;perfil.esperaHasta=0;savePerfil();finPin('PIN quitado');}
+    else pasoPin('elegir');
+  },msg,ok);
+  if(step==='elegir')padStart(pin=>{flujo.first=pin;pasoPin('repetir');},msg,ok);
+  if(step==='repetir')padStart(async pin=>{
+    if(pin!==flujo.first){flujo.first='';pasoPin('elegir','No coinciden. Vuelve a elegirlo');return;}
+    if(flujo.mode==='activar'){pasoPin('aviso');return;}
+    perfil.pin=await crearPin(pin);savePerfil();finPin('PIN cambiado');
+  },msg,ok);
+}
+function finPin(msg){flujo=null;teclado=null;openMe();toast(msg);}
+/* "Guardar copia ahora" sin salir del flujo; si el móvil no deja descargar, la hoja de copia. */
+async function copiaDesdeAviso(){
+  const dl=await getDownloader();
+  try{await dl.save({filename:'comida-app-copia-'+TODAY+'.json',data:backupJson()});data.ultimaCopia=new Date().toISOString();save();toast('Copia guardada');pasoPin('aviso');}
+  catch(e){if(e&&e.code==='declined')return;flujo=null;openBackup('guardar');}
+}
+
+function close(){$('overlay').innerHTML='';document.body.style.overflow='';draft=null;if(!bloqueada){flujo=null;teclado=null;}}
 let tt;function toast(m){clearTimeout(tt);$('toastHost').innerHTML='<div class="toast" role="status">'+esc(m)+'</div>';tt=setTimeout(()=>$('toastHost').innerHTML='',1800);}
 function moverSemana(s){ui.cursor=iso(addDays(parse(ui.cursor),7*s));render();}
 function irA(f){ui.sec='hoy';ui.cursor=f;saveUi();render();window.scrollTo(0,0);}
@@ -939,6 +1115,15 @@ function irA(f){ui.sec='hoy';ui.cursor=f;saveUi();render();window.scrollTo(0,0);
 /* ---------- eventos ---------- */
 document.addEventListener('click',e=>{
   const t=e.target.closest('button,[data-close]');if(!t)return;
+  if(t.dataset.key){padKey(t.dataset.key);return;}
+  if(t.dataset.pinflow){openPinFlow(t.dataset.pinflow);return;}
+  if(t.dataset.bloqueo){perfil.bloqueo=t.dataset.bloqueo;savePerfil();document.querySelectorAll('[data-bloqueo]').forEach(b=>b.setAttribute('aria-pressed',String(b===t)));return;}
+  if(t.id==='pinCancel'){flujo=null;teclado=null;openMe();return;}
+  if(t.id==='pinNombreOk'){const v=$('f-pnombre').value.replace(/\s+/g,' ').trim();if(!v){$('f-pnombre').focus();toast('Escribe tu nombre para seguir');return;}setNombre(v);pasoPin('elegir');return;}
+  if(t.id==='pinCopia'){copiaDesdeAviso();return;}
+  if(t.id==='pinActivar'){t.disabled=true;crearPin(flujo.first).then(pn=>{perfil.pin=pn;perfil.fallos=0;perfil.esperaHasta=0;savePerfil();finPin('PIN activado');});return;}
+  if(t.id==='forgotBtn'){$('forgotBox').innerHTML='<div class="forgot"><span>Sin el PIN no se pueden ver los datos. Puedes borrar todo lo de este móvil y recuperar después tu última copia.</span><button class="btn danger" id="wipeBtn">Borrar todo y empezar</button></div>';return;}
+  if(t.id==='wipeBtn'){if(t.classList.contains('armed'))borrarTodo();else{t.classList.add('armed');t.textContent='¿Seguro? Pulsa otra vez';}return;}
   if(t.dataset.sec){ui.sec=t.dataset.sec;if(ui.sec==='hoy')ui.cursor=ui.cursor||TODAY;saveUi();render();window.scrollTo(0,0);return;}
   if(t.dataset.wk){moverSemana(Number(t.dataset.wk));return;}
   if(t.dataset.cal){ui.cal=t.dataset.cal;saveUi();render();return;}
@@ -1012,10 +1197,17 @@ document.addEventListener('change',e=>{
 });
 document.addEventListener('submit',e=>{e.preventDefault();if(e.target.id==='fIng')saveIngesta();if(e.target.id==='fDay')saveDay();});
 document.addEventListener('keydown',e=>{
+  if(teclado&&$('pinPad')&&!/^(INPUT|TEXTAREA)$/.test(e.target.tagName)){
+    if(/^[0-9]$/.test(e.key)){e.preventDefault();padKey(e.key);return;}
+    if(e.key==='Backspace'){e.preventDefault();padKey('del');return;}
+  }
+  if(bloqueada)return;
+  if(e.key==='Enter'&&e.target.id==='f-pnombre'){e.preventDefault();$('pinNombreOk').click();return;}
   if(e.key==='Escape'&&$('overlay').innerHTML){const n=$('f-nombre');if(n)setNombre(n.value);close();}
   if(e.key==='Enter'&&e.target.id==='f-nombre'){e.preventDefault();e.target.blur();}
 });
 
 render();
+if(perfil.pin)bloquear();
 })();
 </script>
