@@ -25,8 +25,8 @@ Empezar por `Comida App.md`. Este repo es sólo la implementación.
 | 2 | `parser/` — dataframe *tidy*, parquet y SQLite | ✅ v1 |
 | 3 | `validar.py` — erratas, vocabulario y campos ausentes | ✅ v1 |
 | — | `visor/` — página local de revisión (calendario + día) | ✅ v1 |
-| 4 | `app/` — captura en el móvil | 🟡 **v0.5** publicada (prototipo v0.4 + D13); después, PWA |
-| 5 | Calendario de revisión (Día, Semana, Mes, Año) | 🟡 dentro de `app/` |
+| 4 | `app/` — captura en el móvil | 🟡 **v0.6** publicada (rediseño «Sereno», D15); después, PWA |
+| 5 | Calendario de revisión (Hoy con la semana; Mes y Año) | 🟡 dentro de `app/` |
 | 6 | Vistas de análisis (Q1–Q4) | 🔒 después de 4–6 semanas de registro |
 
 Desde el 23-09-2026 la fuente de verdad es la app (D1 revisada) y la Fase 0 en
@@ -34,16 +34,19 @@ Obsidian queda sustituida por registrar con el prototipo (D10). `validar.py`,
 `parsear.py` y el visor siguen sirviendo sobre los `.md` **exportados** desde la app.
 
 Los siete puntos abiertos de la especificación se cerraron el 24-09-2026 (D13) y están en
-la v0.5. Lo siguiente, en orden (banco de ideas §4.2 de `Tareas/CA-Instrucciones.md`):
+la v0.5; la v0.6 (27-09-2026) rehace el aspecto con D15. Lo siguiente, en orden (banco de ideas §4.2 de `Tareas/CA-Instrucciones.md`):
 modelo canónico con los vocabularios leídos del esquema, fuentes empaquetadas, IndexedDB,
 *service worker* y tests de los formatos de exportación.
 
 ## La app (`app/`)
 
-`app/index.html` es la **v0.5**: el prototipo v0.4 más lo que decide D13 (hambre, dónde y
-pantalla antes de comer; contadores de agua, actividad y sueño; resumen "N registros · M por
-completar"; recuperar copia fusionando sin pisar, copias `version: 2` que siguen leyendo las
-`version: 1`; número de registros en mes y año). Un solo fichero, se abre en el navegador
+`app/index.html` es la **v0.6**: el rediseño «Sereno» de D15 sobre la v0.5 (prototipo v0.4
+más D13). Dos secciones con una barra flotante abajo: **Hoy** (la semana en una tira con su
+número ISO y el día como una línea de tiempo con un icono por comida) y **Calendario** (Mes
+con la columna de semanas, y Año), con **Registrar** en el centro. La cabecera saluda por el
+nombre y lleva Exportar y **Tu espacio** (nombre y copia de seguridad; la copia lleva
+`perfil: { nombre }`). Los campos de los formularios, los formatos de exportación y la
+fusión de copias no cambian respecto a la v0.5. Un solo fichero, se abre en el navegador
 tal cual. Publicado con GitHub Pages en
 https://icaraballo.github.io/Comida_App/app/ — el repo es público de momento para
 poder servirlo; no lleva datos reales. Guarda en el `localStorage` del navegador, así que

@@ -21,10 +21,11 @@ con `Tareas/CA-Instrucciones.md` del vault, **manda el vault**.
    avisa de lo ausente, nunca rechaza.
 4. **Captura y clasificación van separadas.** Los alimentos se registran en texto
    libre; el etiquetado es posterior y en batch.
-5. **El prototipo manda sobre el aspecto.** `app/` parte de
-   `CA-Prototipo-v0.4.html` (vault, `Diseño/`) y tiene que verse y comportarse
-   igual, salvo en lo que cambia D13 (`Diseño/CA-Decisiones.md`), donde
-   manda `app/`. Si la especificación y el prototipo discrepan, preguntar.
+5. **La especificación manda sobre el aspecto.** Desde la v0.6 (D15, rediseño
+   «Sereno») la referencia visual es `Diseño/CA-Especificacion-App-Registro.md`
+   del vault (§3 y §7), no el prototipo v0.4, del que solo quedan los campos,
+   los formatos de exportación y la copia. Si la especificación y la app
+   discrepan, preguntar.
    Lo que siga abierto en el banco de ideas de `CA-Instrucciones` no se decide
    sin el usuario.
 
