@@ -261,6 +261,37 @@ textarea{min-height:64px;resize:vertical}
 .whenrow input[type="time"]{font-family:var(--f-display);font-weight:500;font-size:20px;width:auto;padding:4px 12px}
 .whenrow .day{font-size:15px;padding-bottom:10px;overflow-wrap:anywhere}
 .hint{font-size:13px;color:var(--ink-3);margin:0}
+/* D16: resumen de los bloques plegados, «Contexto y etiquetas» y «¿Cómo me he quedado?» */
+details.block > summary .tw{flex:1;min-width:0;display:grid}
+details.block > summary .res{font-size:13px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+details.block:not(.hasres) > summary .res,details.block[open] > summary .res,details.block.hasres:not([open]) > summary .op{display:none}
+details.block.contexto > summary .bd{background:var(--ink-3)}
+.sep{height:1px;background:var(--surface-2)}
+.lblrow{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.lblrow label{font-size:13px;font-weight:700;color:var(--ink-label)}
+.lblrow .aside{font-size:13px;color:var(--ink-2)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:8px;max-width:100%;min-height:36px;padding:6px 12px;border-radius:999px;border:1px solid var(--line-2);background:var(--field);color:var(--ink);font-size:14px}
+.chip span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chip.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.etqin{position:relative}
+.etqin .hash{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--ink-3);font-weight:700;pointer-events:none}
+.etqin input{padding-left:30px;min-height:48px}
+.etqin input:disabled{opacity:.6}
+.sug{display:grid;border:1px solid var(--line-2);border-radius:14px;overflow:hidden;background:var(--surface)}
+.sug button{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:48px;padding:0 14px;border:0;border-top:1px solid var(--line);background:transparent;color:var(--ink);font-size:15px;text-align:left}
+.sug button:first-child{border-top:0}
+.sug button span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sug button small{flex:none;font-size:13px;color:var(--ink-2)}
+.sug button.hl{background:var(--accent-soft)}
+.sug button.new{color:var(--accent);font-weight:700}
+.tops{display:grid;gap:6px}
+.tops:empty{display:none}
+.tops .lbl2{font-size:13px;color:var(--ink-2)}
+.etqs{position:relative;display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;pointer-events:none}
+.etqchip{display:inline-flex;align-items:center;height:24px;max-width:100%;padding:0 9px;border-radius:999px;background:var(--surface-2);color:var(--ink-label);font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.segrow.sac .pick button{min-height:40px}
+.despues .segrow .pick button[aria-pressed="true"]{background:var(--after);color:var(--on-color)}
 .step{display:flex;align-items:center;gap:8px}
 .step button{width:44px;height:44px;border-radius:50%;border:1px solid var(--line-2);background:var(--field);font-size:20px;line-height:1;display:grid;place-items:center}
 .step output{min-width:88px;text-align:center;font-family:var(--f-display);font-weight:600;font-size:18px;font-variant-numeric:tabular-nums}
@@ -358,7 +389,7 @@ body.veil .app,body.veil .bar,body.veil .fade,body.veil #overlay{visibility:hidd
 
 <script>
 (function(){
-const VERSION='v0.7';
+const VERSION='v0.8 · etapa 1';
 const STORE='comida-app-proto-v1';
 const TIPOS=[['desayuno','Desayuno'],['media_manana','Media mañana'],['comida','Comida'],['merienda','Merienda'],['cena','Cena'],['picoteo','Picoteo']];
 const TIPO_LBL=Object.fromEntries(TIPOS);
@@ -369,7 +400,7 @@ const ENERGIA=['Alta','Normal','Baja','Sueño','Apatía'];
 const SINTOMAS=['Dolor','Hinchazón','Malestar','Mareo','Gases','Acidez'];
 const HAMBRE=['Sí','Algo','No'];
 const LUGAR=['Casa','Trabajo','Fuera'];
-const PANTALLA=['Sí','No'];
+const SACIEDAD=['Con hambre','Bien','Me he pasado'];
 const CALIDAD=['Buena','Regular','Mala'];
 /* Contadores del cierre del día: paso, primer valor al pulsar ＋ y máximo. */
 const STEPS={agua:{inc:.25,start:.25,max:10,fmt:n=>fmtNum(n)+' l'},actividadHoras:{inc:.25,start:.25,max:24,fmt:n=>fmtHoras(n)},suenoHoras:{inc:.5,start:7,max:24,fmt:n=>fmtHoras(n)}};
@@ -418,22 +449,67 @@ function save(){try{localStorage.setItem(STORE,JSON.stringify(data));}catch(e){}
 function saveUi(){try{localStorage.setItem(STORE+'-ui',JSON.stringify({sec:ui.sec,cal:ui.cal,posponer:ui.posponer}));}catch(e){}}
 function savePerfil(){try{localStorage.setItem(STORE+'-perfil',JSON.stringify(perfil));}catch(e){}}
 
+/* Datos de ejemplo (D16): unas 6 semanas, para que Patrones se vea entero al probar.
+   Los tres últimos días están escritos a mano; el resto sale de un generador con
+   semilla fija, así que las cifras son siempre las mismas. */
 function seed(){
-  const d={ingestas:{},dias:{},ejemplos:true};
+  const d={ingestas:{},dias:{},ejemplos:true,etiquetasDistintas:[]};
   const t=new Date();
   const add=(off,o)=>{const id=uid();d.ingestas[id]=Object.assign(ingVacia(),{id,fecha:iso(addDays(t,off)),ejemplo:true},o);};
-  add(0,{tipo:'desayuno',hora:'07:40',alimentos:'Café con leche, tostada con tomate y aceite',hambre:'Sí',lugar:'Casa',pantalla:'Sí',emoAntes:['Ansiedad'],pensAntes:'Voy tarde, reunión a las 9',emoDespues:['Ninguna'],pensDespues:'Mejor, más tranquilo',energia:'Normal'});
-  add(0,{tipo:'media_manana',hora:'11:15',alimentos:'Plátano y un puñado de nueces',emoAntes:['Aburrimiento'],pensAntes:'Necesito un descanso'});
-  add(-1,{tipo:'desayuno',hora:'07:30',alimentos:'Yogur con avena y fruta',emoAntes:['Felicidad'],emoDespues:['Felicidad'],energia:'Alta'});
-  add(-1,{tipo:'comida',hora:'14:20',alimentos:'Lentejas, ensalada, pan',emoAntes:['Frustración'],pensAntes:'La mañana no ha salido como quería',emoDespues:['Culpa'],pensDespues:'He comido muy rápido',energia:'Sueño',sintomas:['Hinchazón']});
-  add(-1,{tipo:'picoteo',hora:'18:05',alimentos:'Galletas',hambre:'No',lugar:'Trabajo',pantalla:'Sí',emoAntes:['Aburrimiento','Ansiedad'],emoDespues:['Culpa'],energia:'Baja'});
-  add(-1,{tipo:'cena',hora:'21:30',alimentos:'Tortilla francesa y verduras',emoAntes:['Ninguna'],emoDespues:['Ninguna'],energia:'Normal'});
+  add(0,{tipo:'desayuno',hora:'07:40',alimentos:'Café con leche, tostada con tomate y aceite',hambre:'Sí',lugar:'Casa',emoAntes:['Ansiedad'],pensAntes:'Voy tarde, reunión a las 9',emoDespues:['Ninguna'],pensDespues:'Mejor, más tranquilo',saciedad:'Bien',energia:'Normal'});
+  add(0,{tipo:'media_manana',hora:'11:15',alimentos:'Plátano y un puñado de nueces',emoAntes:['Aburrimiento'],pensAntes:'Necesito un descanso',etiquetas:['Reunión jefe']});
+  add(-1,{tipo:'desayuno',hora:'07:30',alimentos:'Yogur con avena y fruta',emoAntes:['Felicidad'],emoDespues:['Felicidad'],saciedad:'Bien',energia:'Alta'});
+  add(-1,{tipo:'comida',hora:'14:20',alimentos:'Lentejas, ensalada, pan',emoAntes:['Frustración'],pensAntes:'La mañana no ha salido como quería',emoDespues:['Culpa'],pensDespues:'He comido muy rápido',saciedad:'Me he pasado',energia:'Sueño',sintomas:['Hinchazón'],etiquetas:['Trabajo en casa']});
+  add(-1,{tipo:'picoteo',hora:'18:05',alimentos:'Galletas',hambre:'No',lugar:'Trabajo',emoAntes:['Aburrimiento','Ansiedad'],emoDespues:['Culpa'],saciedad:'Con hambre',energia:'Baja'});
+  add(-1,{tipo:'cena',hora:'21:30',alimentos:'Tortilla francesa y verduras',emoAntes:['Ninguna'],emoDespues:['Ninguna'],saciedad:'Bien',energia:'Normal'});
   add(-2,{tipo:'desayuno',hora:'08:00',alimentos:'Café y bizcocho',emoAntes:['Ninguna'],emoDespues:['Ninguna'],energia:'Normal'});
-  add(-2,{tipo:'comida',hora:'14:00',alimentos:'Arroz con pollo',emoAntes:['Felicidad'],emoDespues:['Felicidad'],energia:'Normal'});
-  add(-2,{tipo:'cena',hora:'21:00',alimentos:'Sopa y fruta',emoAntes:['Tristeza'],pensAntes:'Día largo',emoDespues:['Tristeza'],energia:'Baja'});
-  for(const off of [-4,-5,-7,-8,-9,-11,-12,-15,-16,-18]){
-    const n=(Math.abs(off)%4)+1;
-    ['desayuno','comida','cena','merienda'].slice(0,n).forEach((tp,i)=>add(off,{tipo:tp,hora:['08:00','14:00','21:00','17:30'][i],alimentos:'(ejemplo)',emoAntes:['Ninguna'],emoDespues:['Ninguna'],energia:'Normal'}));
+  add(-2,{tipo:'comida',hora:'14:00',alimentos:'Arroz con pollo',emoAntes:['Felicidad'],emoDespues:['Felicidad'],saciedad:'Bien',energia:'Normal'});
+  add(-2,{tipo:'cena',hora:'21:00',alimentos:'Sopa y fruta',emoAntes:['Tristeza'],pensAntes:'Día largo',emoDespues:['Tristeza'],saciedad:'Con hambre',energia:'Baja'});
+  let z=20260928;
+  const rnd=()=>{z=(z+0x6D2B79F5)|0;let r=Math.imul(z^z>>>15,1|z);r=r+Math.imul(r^r>>>7,61|r)^r;return ((r^r>>>14)>>>0)/4294967296;};
+  const una=a=>a[Math.floor(rnd()*a.length)];
+  const peso=o=>{let n=rnd()*Object.values(o).reduce((a,b)=>a+b,0);for(const [k,v] of Object.entries(o)){n-=v;if(n<0)return k;}return Object.keys(o)[0];};
+  const hora=(h0,h1)=>{const m=Math.round((h0+rnd()*(h1-h0))*4)*15;return pad(Math.floor(m/60)%24)+':'+pad(m%60);};
+  const COMIDAS={desayuno:['Café con leche y tostada','Yogur con avena y fruta','Café y galletas','Zumo y tostada con aceite'],
+    media_manana:['Plátano','Café y una pieza de fruta','Bocadillo pequeño de jamón','Un puñado de nueces'],
+    comida:['Pasta con albóndigas','Lentejas con arroz','Ensalada de atún y pan','Pollo a la plancha con patatas','Pasta vegetal','Garbanzos con espinacas','Merluza con ensalada'],
+    merienda:['Yogur y fruta','Tostada con queso','Café y un bizcocho','Fruta'],
+    cena:['Tortilla francesa y verduras','Sopa y fruta','Pizza','Pasta con tomate','Pescado al horno con verduras','Bocadillo y patatas fritas'],
+    picoteo:['Galletas','Patatas fritas','Chocolate','Frutos secos','Pan con chorizo']};
+  const HORAS={desayuno:[7.25,9],media_manana:[10.5,12],comida:[13.5,15.25],merienda:[17,18.75],cena:[20.5,22.25]};
+  const DESPUES={Ansiedad:{Culpa:45,Ninguna:30,Ansiedad:25},Aburrimiento:{Culpa:35,Ninguna:50,Aburrimiento:15},Felicidad:{Felicidad:70,Ninguna:30},
+    Ninguna:{Ninguna:80,Felicidad:20},Tristeza:{Tristeza:60,Ninguna:40},Frustración:{Culpa:50,Frustración:50}};
+  const SAC={desayuno:{'Con hambre':30,Bien:65,'Me he pasado':5},cena:{'Con hambre':15,Bien:50,'Me he pasado':35},picoteo:{'Con hambre':30,Bien:40,'Me he pasado':30}};
+  let celebracion=0;
+  for(let off=-3;off>=-41;off--){
+    if(rnd()<.08)continue;
+    const dow=addDays(t,off).getDay(),martes=dow===2,casa=dow===5||(dow===1&&rnd()<.5),finde=dow===0||dow===6;
+    const tipos=['desayuno','media_manana','comida','merienda','cena','picoteo'].filter(tp=>rnd()<({desayuno:.9,media_manana:martes?1:.5,comida:.95,merienda:.45,cena:.9,picoteo:martes||dow===4?.6:.4})[tp]);
+    tipos.forEach(tp=>{
+      const x={tipo:tp,alimentos:una(COMIDAS[tp])};
+      x.hora=tp==='picoteo'?(rnd()<.7?hora(16.5,18.75):rnd()<.5?hora(11.5,12.5):hora(22.5,23.5)):hora(...HORAS[tp]);
+      if(rnd()<.85)x.hambre=tp==='picoteo'?peso({No:60,Algo:25,'Sí':15}):peso({'Sí':55,Algo:30,No:15});
+      const w={Ninguna:30,Felicidad:12,Ansiedad:10,Aburrimiento:8,Tristeza:5,Frustración:5,Rabia:2,Culpa:2,Miedo:2};
+      if(martes)w.Ansiedad+=25;
+      if(tp==='picoteo'){w.Aburrimiento+=12;w.Ansiedad+=8;}
+      const reunion=martes&&tp==='media_manana'&&rnd()<.8;
+      if(reunion){x.emoAntes=['Ansiedad'];x.hambre='No';}
+      else if(rnd()<.9){const e=peso(w);x.emoAntes=[e];if(e!=='Ninguna'&&rnd()<.2){const e2=peso(Object.assign({},w,{Ninguna:0,[e]:0}));x.emoAntes.push(e2);}}
+      if(rnd()<.8){
+        x.emoDespues=[peso(DESPUES[(x.emoAntes||['Ninguna'])[0]]||{Ninguna:1})];
+        x.energia=peso(tp==='comida'?{Normal:45,Baja:15,Alta:10,'Sueño':30}:{Normal:55,Baja:20,Alta:15,'Sueño':10});
+        if(rnd()<.7)x.saciedad=peso(SAC[tp]||{'Con hambre':20,Bien:60,'Me he pasado':20});
+        if(x.saciedad==='Me he pasado'&&rnd()<.4)x.sintomas=['Hinchazón'];
+      }
+      if(rnd()<.6)x.lugar=tp==='comida'&&!casa&&!finde?'Trabajo':finde&&rnd()<.3?'Fuera':'Casa';
+      const etq=[];
+      if(reunion||(martes&&tp==='comida'&&rnd()<.3))etq.push('Reunión jefe');
+      if(casa&&(tp==='comida'||tp==='desayuno')){etq.push('Trabajo en casa');x.lugar='Casa';}
+      if(dow===6&&tp==='cena'&&celebracion<2&&rnd()<.5){celebracion++;etq.push('Celebración');x.emoAntes=['Felicidad'];x.emoDespues=['Felicidad'];x.saciedad='Me he pasado';}
+      if(etq.length)x.etiquetas=etq;
+      add(off,x);
+    });
+    if(rnd()<.5)d.dias[iso(addDays(t,off))]={agua:.25*Math.round(4+rnd()*6),suenoHoras:.5*Math.round(12+rnd()*4),suenoCalidad:peso({Buena:50,Regular:35,Mala:15}),ejemplo:true};
   }
   d.dias[iso(addDays(t,-1))]={agua:1.5,actividadHoras:.75,actividad:'Carrera suave',suenoHoras:6.5,suenoCalidad:'Regular',reflexiones:'Cuando estoy frustrado como más rápido.',predominantes:'Trabajo, prisas',orgullo:'He salido a correr aunque estaba cansado',gratitud:'La cena tranquila en casa',ejemplo:true};
   return d;
@@ -444,10 +520,21 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const ico=(n,c)=>'<svg class="ico'+(c?' '+c:'')+'" aria-hidden="true"><use href="#i-'+n+'"/></svg>';
 const byDay=f=>Object.values(data.ingestas).filter(x=>x.fecha===f).sort((a,b)=>(a.hora||'99').localeCompare(b.hora||'99'));
 const countDay=f=>Object.values(data.ingestas).reduce((n,x)=>n+(x.fecha===f),0);
-const hasAfter=x=>x.emoDespues.length||x.emoDespuesOtra||x.pensDespues||x.energia||x.sintomas.length||x.sintomasOtros;
-const hasBefore=x=>x.hambre||x.lugar||x.pantalla||x.emoAntes.length||x.emoAntesOtra||x.pensAntes;
+/* Completa (D16): dónde, pantalla y etiquetas son contexto y no cuentan como «antes». */
+const hasAfter=x=>x.emoDespues.length||x.emoDespuesOtra||x.pensDespues||x.saciedad||x.energia||x.sintomas.length||x.sintomasOtros;
+const hasBefore=x=>x.hambre||x.emoAntes.length||x.emoAntesOtra||x.pensAntes;
 const completa=x=>!!(x.alimentos&&hasBefore(x)&&hasAfter(x));
-function ingVacia(){return {hambre:'',lugar:'',pantalla:'',emoAntes:[],emoAntesOtra:'',pensAntes:'',emoDespues:[],emoDespuesOtra:'',pensDespues:'',energia:'',energiaOtro:'',sintomas:[],sintomasOtros:''};}
+function ingVacia(){return {hambre:'',lugar:'',pantalla:'',emoAntes:[],emoAntesOtra:'',pensAntes:'',emoDespues:[],emoDespuesOtra:'',pensDespues:'',saciedad:'',energia:'',energiaOtro:'',sintomas:[],sintomasOtros:'',etiquetas:[]};}
+/* Etiquetas (D16): texto libre por ingesta. Dos con la misma clave (sin tildes ni
+   mayúsculas) son la misma. No hay lista aparte: el catálogo sale de las ingestas. */
+const ETQ_MAX=5,ETQ_LARGO=30;
+const limpiarEtq=t=>String(t||'').replace(/\s+/g,' ').trim().slice(0,ETQ_LARGO).trim();
+const claveEtq=t=>limpiarEtq(t).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+function catalogoEtq(){
+  const m=new Map();
+  Object.values(data.ingestas).forEach(x=>(x.etiquetas||[]).forEach(t=>{const k=claveEtq(t);if(!k)return;const c=m.get(k);if(c)c.usos++;else m.set(k,{nombre:t,clave:k,usos:1});}));
+  return [...m.values()].sort((a,b)=>b.usos-a.usos||a.nombre.localeCompare(b.nombre,'es'));
+}
 const fmtNum=n=>String(Math.round(n*100)/100).replace('.',',');
 function fmtHoras(n){if(!n)return '0 h';const h=Math.floor(n),m=Math.round((n-h)*60);return (h?h+' h':'')+(h&&m?' ':'')+(m?m+' min':'');}
 /* Las copias version 1 guardaban el agua como texto ("1,5 litros") y la actividad
@@ -465,6 +552,7 @@ function normDia(di){
 function normData(d){
   Object.keys(d.ingestas).forEach(k=>{d.ingestas[k]=Object.assign(ingVacia(),d.ingestas[k]);});
   d.dias=d.dias||{};Object.values(d.dias).forEach(normDia);
+  if(!Array.isArray(d.etiquetasDistintas))d.etiquetasDistintas=[];
   return d;
 }
 const lower=v=>v?v.toLowerCase():'';
@@ -566,8 +654,8 @@ function halfHtml(x,lado){
   }
   const d=emoList(x.emoDespues,x.emoDespuesOtra),en=x.energia==='Otro'?x.energiaOtro:x.energia;
   const sint=x.sintomas.filter(s=>s!=='Otros').concat(x.sintomasOtros?[x.sintomasOtros]:[]);
-  const meta=[];if(en)meta.push('Energía '+en.toLowerCase());if(sint.length)meta.push(sint.join(', ').toLowerCase());
-  return '<div class="half d"><h5>Después</h5>'+(d.length?'<div class="emos">'+esc(d.join(' · '))+'</div>':'')+(x.pensDespues?'<div class="th">«'+esc(x.pensDespues)+'»</div>':'')+(meta.length?'<div class="meta">'+esc(meta.join(' · '))+'</div>':'')+'</div>';
+  const m=[lower(x.saciedad),en?'energía '+en.toLowerCase():'',sint.join(', ').toLowerCase()].filter(Boolean).join(' · '),meta=m?cap(m):'';
+  return '<div class="half d"><h5>Después</h5>'+(d.length?'<div class="emos">'+esc(d.join(' · '))+'</div>':'')+(x.pensDespues?'<div class="th">«'+esc(x.pensDespues)+'»</div>':'')+(meta?'<div class="meta">'+esc(meta)+'</div>':'')+'</div>';
 }
 function ingItem(x){
   const ha=hasBefore(x),hd=hasAfter(x),hora=x.hora||'sin hora',lbl=TIPO_LBL[x.tipo];
@@ -579,7 +667,7 @@ function ingItem(x){
     const a=emoList(x.emoAntes,x.emoAntesOtra).join(', '),d=emoList(x.emoDespues,x.emoDespuesOtra).join(', ');
     const en=x.energia==='Otro'?x.energiaOtro:x.energia;
     return '<div class="ti t-'+x.tipo+'"><span class="dot d-full">'+ico(x.tipo)+'</span><button class="card" data-edit="'+x.id+'">'+head+'</div>'
-      +'<div class="food">'+esc(x.alimentos)+'</div><div class="cmeta">'+esc((a||'—')+' → '+(d||'—')+(en?' · energía '+en.toLowerCase():''))+'</div></button></div>';
+      +'<div class="food">'+esc(x.alimentos)+'</div><div class="cmeta">'+esc((a||'—')+' → '+(d||'—')+(en?' · energía '+en.toLowerCase():'')+(x.saciedad?' · '+lower(x.saciedad):''))+'</div></button></div>';
   }
   const tag=!ha&&!hd?'Falta el antes y el después':!hd?'Falta el después':!ha?'Falta el antes':'Faltan los alimentos';
   const add=(lado,part)=>'<button class="half add '+lado+'" data-edit="'+x.id+'" data-part="'+part+'" aria-label="Añadir el '+part+' de '+esc(lbl)+'"><h5>'+(part==='antes'?'Antes':'Después')+'</h5>+ Añadir</button>';
@@ -587,7 +675,8 @@ function ingItem(x){
     +'<button class="hit" data-edit="'+x.id+'" aria-label="Editar '+esc(lbl+' '+hora)+'"></button><div class="body">'
     +head+'<span class="tag">'+tag+'</span></div>'
     +'<div class="food'+(x.alimentos?'':' none')+'">'+esc(x.alimentos||'Sin alimentos anotados')+'</div>'
-    +'<div class="halves">'+(ha?halfHtml(x,'a'):add('a','antes'))+(hd?halfHtml(x,'d'):add('d','despues'))+'</div></div></div></div>';
+    +'<div class="halves">'+(ha?halfHtml(x,'a'):add('a','antes'))+(hd?halfHtml(x,'d'):add('d','despues'))+'</div>'
+    +(x.etiquetas.length?'<div class="etqs">'+x.etiquetas.map(t=>'<span class="etqchip"># '+esc(t)+'</span>').join('')+'</div>':'')+'</div></div></div>';
 }
 function cierreItem(){
   const di=data.dias[ui.cursor]||{},tiene=Object.keys(di).length>0;
@@ -644,6 +733,9 @@ function openIngesta(id,tipo,part){
   const segrow=(name,label,opts,sel)=>'<div class="segrow"><span class="lbl" id="lb-'+name+'">'+label+'</span>'+pick(name,opts,sel,false).replace('class="pick"','class="pick" role="group" aria-labelledby="lb-'+name+'"')+'</div>';
   const tipos='<div class="pick tipos" data-pick="tipo" data-multi="0" role="group" aria-label="¿Qué comida?">'+TIPOS.map(([k,l])=>'<button type="button" class="t-'+k+'" data-v="'+k+'" aria-pressed="'+(draft.tipo===k)+'">'+ico(k)+'<span>'+(TIPO_PILL[k]||l)+'</span></button>').join('')+'</div>';
   const openA=!!(id&&hasBefore(draft))||part==='antes',openD=!!(id&&hasAfter(draft))||part==='despues';
+  const openC=!!(id&&(draft.lugar||draft.pantalla||draft.etiquetas.length));
+  /* Plegados, los bloques enseñan debajo del título lo que tienen (resumenForm). */
+  const sum=(cls,title,op)=>'<summary><span class="bd"></span><span class="tw"><h4>'+title+'</h4><span class="res"></span></span><span class="op">'+op+'</span><span class="chev" aria-hidden="true">⌄</span></summary>';
   const other=(name,val,label,shown)=>'<div class="field" data-other="'+name+'"'+(shown?'':' hidden')+'><label for="f-'+name+'">'+label+'</label><input type="text" id="f-'+name+'" value="'+esc(val)+'"></div>';
   $('overlay').innerHTML='<div class="scrim" data-close></div><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sh-t"><div class="grab" aria-hidden="true"></div><form class="sheet-in" id="fIng">'
     +'<div class="sheet-head"><button type="button" class="btn ghost" data-close>Cancelar</button><h3 id="sh-t">'+(id?'Editar':'Nuevo registro')+'</h3><button class="btn primary small" type="submit">Guardar</button></div>'
@@ -651,17 +743,26 @@ function openIngesta(id,tipo,part){
     +'<div class="field"><label for="f-alimentos">Alimentos y bebidas</label><input type="text" id="f-alimentos" placeholder="Ej.: café con leche y tostada" value="'+esc(draft.alimentos)+'"></div>'
     +'<div class="whenrow"><div class="field"><label for="f-hora">Hora</label><input type="time" id="f-hora" value="'+esc(draft.hora)+'"></div>'
     +'<div class="field"><span class="lbl">Día</span><span class="day">'+esc(cap(longDate(draft.fecha)))+'</span></div></div></div>'
-    +'<details class="block antes"'+(openA?' open':'')+'><summary><span class="bd"></span><h4>Antes de comer</h4><span class="op">opcional</span><span class="chev" aria-hidden="true">⌄</span></summary><div class="inner">'
+    +'<details class="block antes"'+(openA?' open':'')+'>'+sum('antes','Antes de comer','opcional')+'<div class="inner">'
     +segrow('hambre','¿Tengo hambre?',HAMBRE,draft.hambre)
-    +segrow('lugar','¿Dónde?',LUGAR,draft.lugar)
-    +segrow('pantalla','¿Con pantalla?',PANTALLA,draft.pantalla)
     +'<div class="field"><legend>¿Cómo me siento?</legend>'+pick('emoAntes',EMOCIONES.concat('Otra'),draft.emoAntes.concat(draft.emoAntesOtra?['Otra']:[]),true)+'</div>'
     +other('emoAntesOtra',draft.emoAntesOtra,'Otra emoción',!!draft.emoAntesOtra)
     +'<div class="field"><label for="f-pensAntes">¿Qué pienso?</label><textarea id="f-pensAntes">'+esc(draft.pensAntes)+'</textarea></div></div></details>'
-    +'<details class="block despues"'+(openD?' open':'')+'><summary><span class="bd"></span><h4>Después de comer</h4><span class="op">Puedes rellenarlo luego</span><span class="chev" aria-hidden="true">⌄</span></summary><div class="inner">'
+    /* Contexto y etiquetas (D16): «¿Con pantalla?» ya no se pregunta; la de los registros viejos se conserva. */
+    +'<details class="block contexto"'+(openC?' open':'')+'>'+sum('contexto','Contexto y etiquetas','opcional')+'<div class="inner">'
+    +segrow('lugar','¿Dónde?',LUGAR,draft.lugar)
+    +'<div class="sep" aria-hidden="true"></div>'
+    +'<div class="field" id="etqBox"><div class="lblrow"><label for="f-etq">Etiquetas</label><span class="aside">¿Qué había pasado?</span></div>'
+    +'<div class="chips" id="etqSel"></div>'
+    +'<div class="etqin"><span class="hash" aria-hidden="true">#</span><input type="text" id="f-etq" maxlength="'+ETQ_LARGO+'" autocomplete="off" autocapitalize="sentences" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="etqSug"></div>'
+    +'<div class="sug" id="etqSug" role="listbox" aria-label="Sugerencias" hidden></div>'
+    +'<div class="tops" id="etqTop"></div></div>'
+    +'</div></details>'
+    +'<details class="block despues"'+(openD?' open':'')+'>'+sum('despues','Después de comer','Puedes rellenarlo luego')+'<div class="inner">'
     +'<div class="field"><legend>¿Cómo me siento?</legend>'+pick('emoDespues',EMOCIONES.concat('Otra'),draft.emoDespues.concat(draft.emoDespuesOtra?['Otra']:[]),true)+'</div>'
     +other('emoDespuesOtra',draft.emoDespuesOtra,'Otra emoción',!!draft.emoDespuesOtra)
     +'<div class="field"><label for="f-pensDespues">¿Qué pienso?</label><textarea id="f-pensDespues">'+esc(draft.pensDespues)+'</textarea></div>'
+    +segrow('saciedad','¿Cómo me he quedado?',SACIEDAD,draft.saciedad).replace('class="segrow"','class="segrow sac"')
     +'<div class="field"><legend>Energía</legend>'+pick('energia',ENERGIA.concat('Otro'),draft.energia,false)+'</div>'
     +other('energiaOtro',draft.energiaOtro,'Otra energía',draft.energia==='Otro')
     +'<div class="field"><legend>Síntomas físicos</legend>'+pick('sintomas',SINTOMAS.concat('Otros'),draft.sintomas,true)+'</div>'
@@ -670,7 +771,59 @@ function openIngesta(id,tipo,part){
     +'<div class="sheet-foot">'+(id?'<button type="button" class="btn danger" id="delBtn">Borrar registro</button>':'<span></span>')+'<button class="btn primary" type="submit">Guardar</button></div>'
     +'</form></div>';
   document.body.style.overflow='hidden';
+  sugIx=0;pintarEtq();resumenForm();
   if(part){const b=document.querySelector('details.'+(part==='antes'?'antes':'despues'));if(b)b.scrollIntoView({block:'start'});}
+}
+/* Resumen de una línea de cada bloque plegado, con lo que hay ahora en el formulario. */
+function resumenForm(){
+  if(!$('fIng')||!draft)return;
+  const emos=(n,o)=>{const v=readPick(n),t=$('f-'+o).value.trim();return v.filter(e=>e!=='Otra').concat(v.includes('Otra')&&t?[t]:[]);};
+  const pens=id=>{const v=$(id).value.trim();return v?'«'+v+'»':'';};
+  const set=(cls,parts)=>{const d=document.querySelector('#fIng details.'+cls),t=parts.filter(Boolean).join(' · ');d.querySelector('.res').textContent=t;d.classList.toggle('hasres',!!t);};
+  const h=readPick('hambre')[0],a=[h?'Hambre: '+h.toLowerCase():''].concat(emos('emoAntes','emoAntesOtra'));
+  set('antes',a.some(Boolean)?a:[pens('f-pensAntes')]);
+  set('contexto',[readPick('lugar')[0],pantallaTxt(draft.pantalla)].concat(draft.etiquetas.map(t=>'#'+t)));
+  const en=readPick('energia')[0],enT=en==='Otro'?$('f-energiaOtro').value.trim():en;
+  const si=readPick('sintomas'),sT=si.filter(v=>v!=='Otros').concat(si.includes('Otros')&&$('f-sintomasOtros').value.trim()?[$('f-sintomasOtros').value.trim()]:[]);
+  const d=emos('emoDespues','emoDespuesOtra').concat([lower(readPick('saciedad')[0]),enT?'energía '+lower(enT):'',lower(sT.join(', '))]);
+  set('despues',d.some(Boolean)?d:[pens('f-pensDespues')]);
+}
+/* Etiquetas del formulario: las elegidas, el campo con sugerencias y «Las que más usas». */
+let sugIx=0;
+function pintarEtq(){
+  if(!$('etqBox')||!draft)return;
+  const sel=draft.etiquetas,full=sel.length>=ETQ_MAX,claves=new Set(sel.map(claveEtq)),inp=$('f-etq');
+  $('etqSel').innerHTML=sel.map((t,i)=>'<button type="button" class="chip on" data-etqdel="'+i+'" aria-label="Quitar etiqueta '+esc(t)+'"><span># '+esc(t)+'</span><span aria-hidden="true">✕</span></button>').join('');
+  $('etqSel').hidden=!sel.length;
+  inp.disabled=full;inp.placeholder=full?'Máximo '+ETQ_MAX:'';if(full)inp.value='';
+  const tops=full?[]:catalogoEtq().filter(c=>!claves.has(c.clave)).slice(0,6);
+  $('etqTop').innerHTML=tops.length?'<span class="lbl2">Las que más usas</span><div class="chips">'+tops.map(c=>'<button type="button" class="chip" data-etqadd="'+esc(c.nombre)+'"># '+esc(c.nombre)+'</button>').join('')+'</div>':'';
+  pintarSug();
+}
+/* Hasta 4 ya usadas que contienen lo escrito y, al final, «+ Crear», salvo que ya exista. */
+function sugerencias(){
+  const inp=$('f-etq'),q=claveEtq(inp.value);if(!q)return null;
+  const claves=new Set(draft.etiquetas.map(claveEtq)),cat=catalogoEtq();
+  const it=cat.filter(c=>!claves.has(c.clave)&&c.clave.includes(q)).slice(0,4);
+  if(!cat.some(c=>c.clave===q)&&!claves.has(q))it.push({nuevo:limpiarEtq(inp.value)});
+  return it;
+}
+function pintarSug(){
+  const box=$('etqSug'),inp=$('f-etq'),it=sugerencias();
+  if(!it||!it.length){box.hidden=true;box.innerHTML='';inp.setAttribute('aria-expanded','false');inp.removeAttribute('aria-activedescendant');return;}
+  sugIx=Math.max(0,Math.min(sugIx,it.length-1));
+  box.innerHTML=it.map((c,i)=>'<button type="button" role="option" id="sug-'+i+'" aria-selected="'+(i===sugIx)+'" class="'+(i===sugIx?'hl':'')+(c.nuevo?' new':'')+'" data-etqadd="'+esc(c.nuevo||c.nombre)+'" data-foco="1">'
+    +(c.nuevo?'+ Crear «'+esc(c.nuevo)+'»':'<span># '+esc(c.nombre)+'</span><small>usada '+c.usos+(c.usos===1?' vez':' veces')+'</small>')+'</button>').join('');
+  box.hidden=false;inp.setAttribute('aria-expanded','true');inp.setAttribute('aria-activedescendant','sug-'+sugIx);
+}
+/* Si ya existe con otra forma («reunion jefe» → «Reunión jefe»), se usa la existente. */
+function addEtq(t,foco){
+  const n=limpiarEtq(t),k=claveEtq(n);if(!n||!draft)return;
+  if(draft.etiquetas.length>=ETQ_MAX||draft.etiquetas.some(e=>claveEtq(e)===k))return;
+  const ex=catalogoEtq().find(c=>c.clave===k);
+  draft.etiquetas.push(ex?ex.nombre:n);
+  $('f-etq').value='';sugIx=0;pintarEtq();resumenForm();
+  if(foco&&!$('f-etq').disabled)$('f-etq').focus();
 }
 function guessTipo(d){const h=d.getHours()+d.getMinutes()/60;return h<10.5?'desayuno':h<12.5?'media_manana':h<16?'comida':h<19.5?'merienda':'cena';}
 function readPick(name){const box=document.querySelector('[data-pick="'+name+'"]');return [...box.querySelectorAll('[aria-pressed="true"]')].map(b=>b.dataset.v);}
@@ -678,7 +831,8 @@ function saveIngesta(){
   const x=draft;
   x.tipo=readPick('tipo')[0]||'comida';
   x.hora=$('f-hora').value;x.alimentos=$('f-alimentos').value.trim();
-  x.hambre=readPick('hambre')[0]||'';x.lugar=readPick('lugar')[0]||'';x.pantalla=readPick('pantalla')[0]||'';
+  x.hambre=readPick('hambre')[0]||'';x.lugar=readPick('lugar')[0]||'';
+  x.saciedad=readPick('saciedad')[0]||'';x.etiquetas=draft.etiquetas.slice();
   const ea=readPick('emoAntes'),ed=readPick('emoDespues');
   x.emoAntes=ea.filter(e=>e!=='Otra');x.emoAntesOtra=ea.includes('Otra')?$('f-emoAntesOtra').value.trim():'';
   x.emoDespues=ed.filter(e=>e!=='Otra');x.emoDespuesOtra=ed.includes('Otra')?$('f-emoDespuesOtra').value.trim():'';
@@ -763,8 +917,10 @@ function dayFull(f,lvl){
     if(contextoTxt(x))L.push('- Dónde: '+contextoTxt(x));
     L.push('- Antes: '+(emoList(x.emoAntes,x.emoAntesOtra).join(', ')||'—')+(x.pensAntes?' · «'+x.pensAntes+'»':''));
     L.push('- Después: '+(emoList(x.emoDespues,x.emoDespuesOtra).join(', ')||'—')+(x.pensDespues?' · «'+x.pensDespues+'»':''));
+    if(x.saciedad)L.push('- Cómo me he quedado: '+x.saciedad);
     if(enOf(x))L.push('- Energía: '+enOf(x));
     if(sintOf(x).length)L.push('- Síntomas: '+sintOf(x).join(', '));
+    if(x.etiquetas.length)L.push('- Etiquetas: '+x.etiquetas.join(', '));
     L.push('');
   });
   const di=data.dias[f]||{};
@@ -777,11 +933,14 @@ function dayShort(f){
   byDay(f).forEach(x=>{
     let t='  '+(x.hora||'--:--')+' '+TIPO_LBL[x.tipo]+' — '+(x.alimentos||'—');
     const a=emoList(x.emoAntes,x.emoAntesOtra).join(', '),dd=emoList(x.emoDespues,x.emoDespuesOtra).join(', ');
-    if(x.hambre)t+=' | '+lower(hambreTxt(x.hambre));
+    /* D16: «con hambre» puede ser de antes o de después, así que los dos llevan el momento delante. */
+    if(x.hambre)t+=' | antes '+lower(hambreTxt(x.hambre));
     if(contextoTxt(x))t+=' | '+lower(contextoTxt(x));
     if(a||dd)t+=' | '+(a||'—')+' → '+(dd||'—');
+    if(x.saciedad)t+=' | después '+lower(x.saciedad);
     if(enOf(x))t+=' | energía '+enOf(x).toLowerCase();
     if(sintOf(x).length)t+=' | '+sintOf(x).join(', ').toLowerCase();
+    if(x.etiquetas.length)t+=' | '+x.etiquetas.map(e=>'#'+e.toLowerCase()).join(' ');
     L.push(t);
   });
   const di=data.dias[f]||{};
@@ -793,8 +952,9 @@ function csvCell(v){v=String(v??'');return /[;"\n]/.test(v)?'"'+v.replace(/"/g,'
 function exportText(fmt){
   const days=rangeDays().filter(f=>countDay(f)||data.dias[f]);
   if(fmt==='tabla'){
-    const rows=[['fecha','hora','comida','alimentos','hambre_antes','lugar','pantalla','emociones_antes','pensamientos_antes','emociones_despues','pensamientos_despues','energia','sintomas']];
-    days.forEach(f=>byDay(f).forEach(x=>rows.push([f,x.hora,TIPO_LBL[x.tipo],x.alimentos,x.hambre,x.lugar,x.pantalla,emoList(x.emoAntes,x.emoAntesOtra).join(', '),x.pensAntes,emoList(x.emoDespues,x.emoDespuesOtra).join(', '),x.pensDespues,enOf(x),sintOf(x).join(', ')])));
+    /* saciedad y etiquetas (D16) van al final, para no mover las columnas que ya se usan. */
+    const rows=[['fecha','hora','comida','alimentos','hambre_antes','lugar','pantalla','emociones_antes','pensamientos_antes','emociones_despues','pensamientos_despues','energia','sintomas','saciedad','etiquetas']];
+    days.forEach(f=>byDay(f).forEach(x=>rows.push([f,x.hora,TIPO_LBL[x.tipo],x.alimentos,x.hambre,x.lugar,x.pantalla,emoList(x.emoAntes,x.emoAntesOtra).join(', '),x.pensAntes,emoList(x.emoDespues,x.emoDespuesOtra).join(', '),x.pensDespues,enOf(x),sintOf(x).join(', '),x.saciedad,x.etiquetas.join(', ')])));
     return rows.map(r=>r.map(csvCell).join(';')).join('\n');
   }
   if(!days.length)return rangeTitle()+'\n\n(Sin registros)';
@@ -905,7 +1065,8 @@ function openBackup(tab){
   document.body.style.overflow='hidden';
 }
 function backupJson(){
-  const o={app:'comida-app',version:2,exportado:new Date().toISOString(),ingestas:Object.values(data.ingestas),dias:data.dias};
+  /* v3 (D16): saciedad y etiquetas en cada ingesta, y las parejas de etiquetas «No son la misma». Nunca el PIN. */
+  const o={app:'comida-app',version:3,exportado:new Date().toISOString(),ingestas:Object.values(data.ingestas),dias:data.dias,etiquetasDistintas:data.etiquetasDistintas||[]};
   if(perfil.nombre)o.perfil={nombre:perfil.nombre};
   return JSON.stringify(o,null,2);
 }
@@ -970,6 +1131,11 @@ function mergeImport(o){
     else if(rellenar(next.dias[f],inc))dias++;
   });
   if(o.exportado&&(!next.ultimaCopia||o.exportado>next.ultimaCopia))next.ultimaCopia=o.exportado;
+  /* Las etiquetas se rellenan solo si aquí la lista está vacía (rellenar): no se mezclan listas. */
+  const par=p=>Array.isArray(p)&&p.length===2?p.map(String).sort():null;
+  const vistas=new Set((next.etiquetasDistintas||[]).map(p=>JSON.stringify(par(p))));
+  next.etiquetasDistintas=(next.etiquetasDistintas||[]).slice();
+  (Array.isArray(o.etiquetasDistintas)?o.etiquetasDistintas:[]).map(par).filter(Boolean).forEach(p=>{const k=JSON.stringify(p);if(!vistas.has(k)){vistas.add(k);next.etiquetasDistintas.push(p);}});
   const nom=o.perfil&&typeof o.perfil.nombre==='string'?o.perfil.nombre.trim().slice(0,30):'';
   const nombre=!perfil.nombre&&nom?nom:'';
   return {next,nuevas,completadas,dias,nombre};
@@ -1152,7 +1318,7 @@ document.addEventListener('click',e=>{
   if(t.id==='showBackupText'){showBackupText();return;}
   if(t.id==='loadTxt'){const v=$('importTxt').value;if(!v.trim()){toast('Pega primero el texto de la copia');return;}parseImport(v);return;}
   if(t.id==='clearEx'){
-    if(t.dataset.armed){data={ingestas:{},dias:{},ejemplos:false,ultimaCopia:data.ultimaCopia||null};save();render();toast('Listo: empiezas en blanco');}
+    if(t.dataset.armed){data={ingestas:{},dias:{},ejemplos:false,etiquetasDistintas:[],ultimaCopia:data.ultimaCopia||null};save();render();toast('Listo: empiezas en blanco');}
     else{t.dataset.armed='1';t.textContent='¿Seguro? Pulsa otra vez';}
     return;
   }
@@ -1168,6 +1334,8 @@ document.addEventListener('click',e=>{
     return;
   }
   if(t.hasAttribute('data-close')){close();return;}
+  if(t.dataset.etqdel){draft.etiquetas.splice(Number(t.dataset.etqdel),1);pintarEtq();resumenForm();return;}
+  if(t.dataset.etqadd){addEtq(t.dataset.etqadd,!!t.dataset.foco);return;}
   const stp=t.closest('.step');
   if(stp){stepBy(stp.dataset.step,t.hasAttribute('data-inc')?1:-1);return;}
   const box=t.parentElement&&t.parentElement.dataset.pick?t.parentElement:null;
@@ -1182,7 +1350,12 @@ document.addEventListener('click',e=>{
     const name=box.dataset.pick,sel=readPick(name);
     const map={emoAntes:['emoAntesOtra','Otra'],emoDespues:['emoDespuesOtra','Otra'],energia:['energiaOtro','Otro'],sintomas:['sintomasOtros','Otros']};
     if(map[name]){const f=document.querySelector('[data-other="'+map[name][0]+'"]');f.hidden=!sel.includes(map[name][1]);if(!f.hidden)f.querySelector('input').focus();}
+    resumenForm();
   }
+});
+document.addEventListener('input',e=>{
+  if(e.target.id==='f-etq'){sugIx=0;pintarSug();return;}
+  if(e.target.closest('#fIng'))resumenForm();
 });
 /* Deslizar la tira de la semana cambia de semana. */
 let sw=null;
@@ -1202,6 +1375,12 @@ document.addEventListener('keydown',e=>{
     if(e.key==='Backspace'){e.preventDefault();padKey('del');return;}
   }
   if(bloqueada)return;
+  /* Etiquetas: Intro añade la sugerencia resaltada (o crea) y no envía el formulario. */
+  if(e.target.id==='f-etq'){
+    const it=sugerencias();
+    if(e.key==='Enter'){e.preventDefault();if(it&&it.length)addEtq(it[sugIx].nuevo||it[sugIx].nombre,true);return;}
+    if((e.key==='ArrowDown'||e.key==='ArrowUp')&&it&&it.length){e.preventDefault();sugIx=(sugIx+(e.key==='ArrowDown'?1:it.length-1))%it.length;pintarSug();return;}
+  }
   if(e.key==='Enter'&&e.target.id==='f-pnombre'){e.preventDefault();$('pinNombreOk').click();return;}
   if(e.key==='Escape'&&$('overlay').innerHTML){const n=$('f-nombre');if(n)setNombre(n.value);close();}
   if(e.key==='Enter'&&e.target.id==='f-nombre'){e.preventDefault();e.target.blur();}
