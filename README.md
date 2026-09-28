@@ -11,9 +11,9 @@ Empezar por `Comida App.md`. Este repo es sólo la implementación.
 | `Diseño/CA-Especificacion-App-Registro.md` | **La app de registro**: pantallas, datos, exportación, diseño y plan. Con su prototipo `CA-Prototipo-v0.4.html` (salvo en lo que cambia D13, donde manda `app/`) |
 | `Tareas/CA-Instrucciones.md` | Principios no negociables, qué **no** construir, cómo registrar y, al final, el **banco de ideas** (decisiones abiertas y pendientes) |
 | `Diseño/CA-Esquema-de-Datos.md` | **El contrato de datos.** Manda sobre el código |
-| `Diseño/CA-Decisiones.md` | Las trece decisiones (D1–D13), con su motivo |
-| `Diseño/CA-Analisis.md` | Las cuatro preguntas pre-registradas (Q1–Q4) |
-| `Versiones/` | Histórico de builds: `CA-2026-09-v1` y `CA-2026-09-v0.5` |
+| `Diseño/CA-Decisiones.md` | Las dieciséis decisiones (D1–D16), con su motivo |
+| `Diseño/CA-Analisis.md` | Las preguntas pre-registradas (Q1–Q6, con Q3b) y qué tarjeta de Patrones responde a cada una |
+| `Versiones/` | Histórico de builds: `CA-2026-09-v0.1` y de la `v0.5` a la `v0.8` |
 | `QA/` | Bugs activos, sin verificar, resueltos y compatibilidad |
 | `fixtures/` | Contrato de aceptación del parser y del validador |
 
@@ -21,29 +21,31 @@ Empezar por `Comida App.md`. Este repo es sólo la implementación.
 
 | Punto | Qué | Estado |
 |---|---|---|
-| 1 | `esquema/` — JSON Schema + vocabularios cerrados | ✅ v1 |
-| 2 | `parser/` — dataframe *tidy*, parquet y SQLite | ✅ v1 |
-| 3 | `validar.py` — erratas, vocabulario y campos ausentes | ✅ v1 |
-| — | `visor/` — página local de revisión (calendario + día) | ✅ v1 |
-| 4 | `app/` — captura en el móvil | 🟡 **v0.7** publicada (rediseño «Sereno», D15, y PIN opcional, D14); después, PWA |
+| 1 | `esquema/` — JSON Schema + vocabularios cerrados | ✅ v0.1 |
+| 2 | `parser/` — dataframe *tidy*, parquet y SQLite | ✅ v0.1 |
+| 3 | `validar.py` — erratas, vocabulario y campos ausentes | ✅ v0.1 |
+| — | `visor/` — página local de revisión (calendario + día) | ✅ v0.1 |
+| 4 | `app/` — captura en el móvil | 🟡 **v0.8.1** publicada (Patrones, etiquetas y saciedad, D16); después, PWA |
 | 5 | Calendario de revisión (Hoy con la semana; Mes y Año) | 🟡 dentro de `app/` |
-| 6 | Vistas de análisis (Q1–Q4) | 🔒 después de 4–6 semanas de registro |
+| 6 | Vistas de análisis | 🟡 sección **Patrones** en la app (D16), con aviso hasta las 6 semanas |
 
 Desde el 23-09-2026 la fuente de verdad es la app (D1 revisada) y la Fase 0 en
 Obsidian queda sustituida por registrar con el prototipo (D10). `validar.py`,
 `parsear.py` y el visor siguen sirviendo sobre los `.md` **exportados** desde la app.
 
 Los siete puntos abiertos de la especificación se cerraron el 24-09-2026 (D13) y están en
-la v0.5; la v0.6 (27-09-2026) rehace el aspecto con D15. Lo siguiente, en orden (banco de ideas §4.2 de `Tareas/CA-Instrucciones.md`):
+la v0.5; la v0.6 (27-09-2026) rehace el aspecto con D15, la v0.7 añade el PIN (D14) y la v0.8 (28-09-2026) Patrones, etiquetas y saciedad (D16). Lo siguiente, en orden (banco de ideas §4.2 de `Tareas/CA-Instrucciones.md`):
 modelo canónico con los vocabularios leídos del esquema, fuentes empaquetadas, IndexedDB,
 *service worker* y tests de los formatos de exportación.
 
 ## La app (`app/`)
 
-`app/index.html` es la **v0.7**: el rediseño «Sereno» de D15 (v0.6) sobre la v0.5 (prototipo v0.4
-más D13), más el **PIN opcional** de D14. Dos secciones con una barra flotante abajo: **Hoy** (la semana en una tira con su
-número ISO y el día como una línea de tiempo con un icono por comida) y **Calendario** (Mes
-con la columna de semanas, y Año), con **Registrar** en el centro. La cabecera saluda por el
+`app/index.html` es la **v0.8.1**: el rediseño «Sereno» de D15 (v0.6) sobre la v0.5 (prototipo v0.4
+más D13), el **PIN opcional** de D14 (v0.7) y **Patrones, etiquetas y «¿Cómo me he quedado?»** de D16
+(v0.8). Tres secciones con una barra flotante abajo: **Hoy** (la semana en una tira con su
+número ISO y el día como una línea de tiempo con un icono por comida), **Calendario** (Mes
+con la columna de semanas, y Año) y **Patrones** (Resumen con seis tarjetas, y Buscar), con
+**Registrar** como botón redondo a la derecha. La copia es `version: 3`. La cabecera saluda por el
 nombre y lleva Exportar y **Tu espacio** (nombre y copia de seguridad; la copia lleva
 `perfil: { nombre }`). Los campos de los formularios, los formatos de exportación y la
 fusión de copias no cambian respecto a la v0.5. El PIN (v0.7) es de 4 cifras, opcional y
