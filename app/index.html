@@ -584,7 +584,7 @@ body.veil .app,body.veil .dock,body.veil .fade,body.veil #overlay{visibility:hid
 
 <script>
 (function(){
-const VERSION='v0.8';
+const VERSION='v0.8.1';
 const STORE='comida-app-proto-v1';
 const TIPOS=[['desayuno','Desayuno'],['media_manana','Media mañana'],['comida','Comida'],['merienda','Merienda'],['cena','Cena'],['picoteo','Picoteo']];
 const TIPO_LBL=Object.fromEntries(TIPOS);
@@ -1480,6 +1480,8 @@ function saveIngesta(){
   x.tipo=readPick('tipo')[0]||'comida';
   x.hora=$('f-hora').value;x.alimentos=$('f-alimentos').value.trim();
   x.hambre=readPick('hambre')[0]||'';x.lugar=readPick('lugar')[0]||'';
+  /* Lo que quede escrito en el campo de etiquetas sin pulsar Intro también se guarda. */
+  if($('f-etq').value.trim())addEtq($('f-etq').value);
   x.saciedad=readPick('saciedad')[0]||'';x.etiquetas=draft.etiquetas.slice();
   const ea=readPick('emoAntes'),ed=readPick('emoDespues');
   x.emoAntes=ea.filter(e=>e!=='Otra');x.emoAntesOtra=ea.includes('Otra')?$('f-emoAntesOtra').value.trim():'';
