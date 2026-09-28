@@ -60,7 +60,14 @@
         "emocion_otra_antes": { "type": "string" },
         "emocion_otra_despues": { "type": "string" },
         "energia_otro": { "type": "string" },
-        "sintoma_otros": { "type": "string" }
+        "sintoma_otros": { "type": "string" },
+        "saciedad": { "$ref": "#/$defs/saciedad" },
+        "etiquetas": {
+          "description": "[ANADIDO] Texto libre (D16): la situacion, no el alimento. Excepcion a D5, como alimentos.",
+          "type": "array",
+          "items": { "type": "string", "maxLength": 30 },
+          "maxItems": 5
+        }
       }
     },
     "contexto": {
@@ -92,6 +99,10 @@
     "hambre": {
       "description": "[ANADIDO] El campo que separa comer de comer por emocion.",
       "enum": ["si", "algo", "no"]
+    },
+    "saciedad": {
+      "description": "[ANADIDO] Como se queda uno al acabar de comer (D16).",
+      "enum": ["con_hambre", "bien", "me_he_pasado"]
     },
     "calidad_sueno": {
       "description": "[ANADIDO]",

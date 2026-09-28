@@ -23,7 +23,7 @@ COLUMNAS_INGESTA = [
     "tipo", "hora", "alimentos", "hambre_antes",
     "emociones_antes", "pensamientos_antes",
     "emociones_despues", "pensamientos_despues",
-    "energia", "sintomas",
+    "energia", "sintomas", "saciedad", "etiquetas",
     "compania", "lugar", "pantalla",
     "emocion_otra_antes", "emocion_otra_despues", "energia_otro", "sintoma_otros",
 ]
@@ -98,6 +98,8 @@ def tabla_ingestas(dias: list[Dia]) -> pd.DataFrame:
                 "pensamientos_despues": ingesta.get("pensamientos_despues"),
                 "energia": ingesta.get("energia"),
                 "sintomas": _lista(ingesta.get("sintomas")),
+                "saciedad": ingesta.get("saciedad"),
+                "etiquetas": _lista(ingesta.get("etiquetas")),
                 "compania": contexto.get("compania"),
                 "lugar": contexto.get("lugar"),
                 "pantalla": contexto.get("pantalla"),

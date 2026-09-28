@@ -16,7 +16,7 @@ from pathlib import Path
 
 import pandas as pd
 
-LISTAS = ("emociones_antes", "emociones_despues", "sintomas",
+LISTAS = ("emociones_antes", "emociones_despues", "sintomas", "etiquetas",
           "emociones_aparecen", "emociones_desaparecen")
 
 

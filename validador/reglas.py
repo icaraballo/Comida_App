@@ -175,6 +175,8 @@ def _revisar_ingesta(acta: _Acta, nodo: yaml.Node, indice: int) -> None:
     _lista_enum(acta, campos.get("emociones_despues"), "emociones_despues", "emocion")
     _lista_enum(acta, campos.get("sintomas"), "sintomas", "sintoma")
     _enum(acta, campos.get("energia"), "energia", "energia")
+    _enum(acta, campos.get("saciedad"), "saciedad", "saciedad")
+    _etiquetas(acta, campos.get("etiquetas"))
     _revisar_contexto(acta, campos.get("contexto"))
     _revisar_otras(acta, campos)
 
@@ -334,6 +336,36 @@ def _lista_enum(acta: _Acta, par, campo: str, vocabulario: str) -> None:
         acta.aviso(N.linea(clave), "ninguna_con_otras",
                    f"`{campo}` mezcla `{neutro}` con otras emociones",
                    "o no habia nada, o habia algo: elegir una de las dos lecturas")
+
+
+# Limites de la app (D16): se cortan al registrar, asi que pasarse es un .md tocado a mano.
+MAX_ETIQUETAS = 5
+MAX_LARGO_ETIQUETA = 30
+
+
+def _etiquetas(acta: _Acta, par) -> None:
+    """Texto libre por ingesta (D16): no hay vocabulario, solo forma y limites."""
+    if par is None:
+        return
+    clave, nodo = par
+    if N.es_nulo(nodo):
+        acta.aviso(N.linea(clave), "campo_vacio", "`etiquetas` esta en blanco",
+                   "los campos vacios se omiten, no se dejan escritos en blanco")
+        return
+    if not isinstance(nodo, yaml.SequenceNode):
+        acta.error(N.linea(clave), "tipo_dato",
+                   "`etiquetas` deberia ser una lista entre corchetes, p.ej. `[Reunion jefe]`")
+        return
+    elementos = N.elementos(nodo)
+    if len(elementos) > MAX_ETIQUETAS:
+        acta.error(N.linea(clave), "fuera_de_rango",
+                   f"`etiquetas` tiene {len(elementos)}; el maximo es {MAX_ETIQUETAS}")
+    for elemento in elementos:
+        if not N.es_escalar(elemento) or not str(N.valor(elemento)).strip():
+            acta.error(N.linea(elemento), "tipo_dato", "un elemento de `etiquetas` no es texto")
+        elif len(str(N.valor(elemento))) > MAX_LARGO_ETIQUETA:
+            acta.error(N.linea(elemento), "fuera_de_rango",
+                       f"la etiqueta `{N.texto_crudo(elemento)}` pasa de {MAX_LARGO_ETIQUETA} caracteres")
 
 
 def _numero(acta: _Acta, par, campo: str, minimo=None, maximo=None) -> None:

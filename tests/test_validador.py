@@ -195,3 +195,35 @@ def test_campo_mal_escrito_se_sugiere():
     hallazgos = validar(texto, "2026-09-14.md")
     desconocidos = [h for h in hallazgos if h.codigo == "campo_desconocido"]
     assert desconocidos and "emociones_antes" in desconocidos[0].sugerencia
+
+
+# --------------------------------------------------------------------------
+# D16 — saciedad y etiquetas (opcionales: los fixtures de antes no las tienen)
+# --------------------------------------------------------------------------
+
+def _dia_con(extra: str) -> str:
+    return ('---\nfecha: 2026-09-28\ningestas:\n  - tipo: cena\n    hora: "21:30"\n'
+            '    alimentos: pasta con albondigas\n' + extra + '---\n')
+
+
+def test_saciedad_y_etiquetas_validas_pasan():
+    texto = _dia_con('    saciedad: me_he_pasado\n'
+                     '    etiquetas: ["Reunión jefe", "Trabajo en casa"]\n')
+    assert [h for h in validar(texto, "2026-09-28.md") if h.nivel == ERROR] == []
+
+
+def test_saciedad_fuera_de_vocabulario_es_error():
+    hallazgos = validar(_dia_con('    saciedad: mucho\n'), "2026-09-28.md")
+    assert "fuera_de_vocabulario" in _codigos(hallazgos, ERROR)
+
+
+def test_etiquetas_pasan_de_los_limites():
+    seis = _dia_con('    etiquetas: [a, b, c, d, e, f]\n')
+    larga = _dia_con('    etiquetas: ["' + "x" * 31 + '"]\n')
+    assert "fuera_de_rango" in _codigos(validar(seis, "2026-09-28.md"), ERROR)
+    assert "fuera_de_rango" in _codigos(validar(larga, "2026-09-28.md"), ERROR)
+
+
+def test_etiquetas_no_es_una_lista():
+    hallazgos = validar(_dia_con('    etiquetas: Reunión jefe\n'), "2026-09-28.md")
+    assert "tipo_dato" in _codigos(hallazgos, ERROR)
