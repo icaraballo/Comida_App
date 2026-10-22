@@ -1,3 +1,13 @@
+# Comida App → **Comida Consciente** (se ha mudado)
+
+> **La app vive ahora en https://comida-consciente.github.io/** y el código en
+> https://github.com/comida-consciente/comida-consciente.github.io
+>
+> Esta dirección (`icaraballo.github.io/Comida_App/app/`) sigue funcionando con un aviso, para que
+> quien ya la usaba pueda guardar su copia aquí y recuperarla en la nueva. No se actualiza más.
+
+---
+
 # Comida App — código
 
 Registro de alimentación y estado emocional. Local, sin cuentas y sin nube: cada

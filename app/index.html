@@ -1,10 +1,33 @@
+<!doctype html>
+<html lang="es">
 <meta charset="utf-8">
-<title>Comida App</title>
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-Zz7/ZY8KvpamDGSk+RR4GRnNEn9vyvJqCDrrPoYGEUw='; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'none'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<title>Comida Consciente (se ha mudado)</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<!-- D17.6: vista previa del enlace (LinkedIn, WhatsApp…) e iconos. La imagen, sin datos reales. -->
+<meta name="description" content="Lo que comes y cómo te sientes antes y después. Para darte cuenta, no para controlar. Sin cuentas ni servidor: tus datos se quedan en tu móvil.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://comida-consciente.github.io/">
+<meta property="og:title" content="Comida Consciente">
+<meta property="og:description" content="Lo que comes y cómo te sientes antes y después. Para darte cuenta, no para controlar. Sin cuentas ni servidor: tus datos se quedan en tu móvil.">
+<meta property="og:image" content="https://comida-consciente.github.io/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="627">
+<meta property="og:image:alt" content="La pantalla Hoy de Comida Consciente con datos de ejemplo">
+<meta property="og:locale" content="es_ES">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#F6F4EE" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141A17" media="(prefers-color-scheme: dark)">
 <style>
+/* SEG-04 (D17.4): las fuentes van dentro del repo (subconjunto latino, SIL Open Font License:
+   fonts/OFL-*.txt). Ninguna visita avisa a Google. Fraunces es variable (opsz y wght). */
+@font-face{font-family:"Fraunces";src:url("fonts/fraunces.woff2") format("woff2");font-weight:100 900;font-style:normal;font-display:swap}
+@font-face{font-family:"Atkinson Hyperlegible";src:url("fonts/atkinson-400.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"Atkinson Hyperlegible";src:url("fonts/atkinson-700.woff2") format("woff2");font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:"Atkinson Hyperlegible";src:url("fonts/atkinson-400-italic.woff2") format("woff2");font-weight:400;font-style:italic;font-display:swap}
 /* Estilo «Sereno» (D15). Colores, radios y sombras salen siempre de estas variables:
    los dos temas funcionan cambiando solo las variables. */
 :root{
@@ -25,14 +48,16 @@
   --card-shadow:none; --raised-shadow:0 8px 24px rgba(31,42,38,.07);
   --bar-shadow:0 12px 30px rgba(31,42,38,.14);
   /* lo que cambia entre temas sin ser un color de la paleta (§7.3) */
-  --on-color:#FFFFFF; --seg-on:var(--surface); --heat-ink-3:#FFFFFF; --heat-ink-4:#FFFFFF;
+  --on-color:#FFFFFF; --seg-on:var(--surface); --heat-ink-3:var(--ink); --heat-ink-4:#FFFFFF;
   /* v0.8 (D16): botón Registrar, gráficos de Patrones y saciedad. Sin semáforo: los colores
      de las emociones solo sirven para distinguirlas. */
   --fab-shadow:0 8px 20px rgba(46,94,78,.4); --pat-barra:#CFC3DE;
   --sac-hambre:#C98A1B; --sac-bien:#D9D3C5; --sac-pasado:#4B5BA8;
-  --e-felicidad:#2F8A6E; --e-ansiedad:#C98A1B; --e-tristeza:#4B5BA8; --e-rabia:#A23B32; --e-culpa:#7A4E8C;
-  --e-miedo:#5E6A64; --e-aburrimiento:#8FA39A; --e-frustracion:#B8642A; --e-ninguna:#D6E6DE; --e-otra:#D9D3C5;
+  --e-felicidad:#2C8368; --e-ansiedad:#C98A1B; --e-tristeza:#4B5BA8; --e-rabia:#A23B32; --e-culpa:#7A4E8C;
+  --e-miedo:#5E6A64; --e-aburrimiento:#8FA39A; --e-frustracion:#AE5F27; --e-ninguna:#D6E6DE; --e-otra:#D9D3C5;
   --e-aburr-ink:var(--ink);
+  /* SEG-17: texto sobre el ámbar, oscuro en claro y del fondo en oscuro, para llegar a 4,5:1 */
+  --ambar-ink:var(--ink);
   --f-display:"Fraunces", ui-serif, Georgia, serif;
   --f-body:"Atkinson Hyperlegible", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
 }
@@ -53,12 +78,12 @@
     --t-cena:#9AA6E8;         --t-cena-s:#2A2F45;         --t-cena-i:#9AA6E8;
     --t-picoteo:#C2A6E0;      --t-picoteo-s:#33293F;      --t-picoteo-i:#C2A6E0;
     --raised-shadow:0 8px 24px rgba(0,0,0,.35); --bar-shadow:0 12px 30px rgba(0,0,0,.5);
-    --on-color:var(--bg); --seg-on:var(--line-2); --heat-ink-3:var(--ink); --heat-ink-4:var(--accent-ink);
+    --on-color:var(--bg); --seg-on:var(--line-2); --heat-ink-3:var(--bg); --heat-ink-4:var(--accent-ink);
     --fab-shadow:0 8px 20px rgba(0,0,0,.5); --pat-barra:#4A3F5A;
     --sac-hambre:#E8B04A; --sac-bien:#3D4A44; --sac-pasado:#9AA6E8;
     --e-felicidad:#5CC2A0; --e-ansiedad:#E8B04A; --e-tristeza:#9AA6E8; --e-rabia:#E0786E; --e-culpa:#C2A6E0;
-    --e-miedo:#A9B3AD; --e-aburrimiento:#6E827A; --e-frustracion:#E3A06E; --e-ninguna:#2F6152; --e-otra:#3D4A44;
-    --e-aburr-ink:var(--bg);
+    --e-miedo:#A9B3AD; --e-aburrimiento:#738880; --e-frustracion:#E3A06E; --e-ninguna:#2F6152; --e-otra:#3D4A44;
+    --e-aburr-ink:var(--bg); --ambar-ink:var(--bg);
   }
 }
 :root[data-theme="dark"]{
@@ -77,12 +102,12 @@
   --t-cena:#9AA6E8;         --t-cena-s:#2A2F45;         --t-cena-i:#9AA6E8;
   --t-picoteo:#C2A6E0;      --t-picoteo-s:#33293F;      --t-picoteo-i:#C2A6E0;
   --raised-shadow:0 8px 24px rgba(0,0,0,.35); --bar-shadow:0 12px 30px rgba(0,0,0,.5);
-  --on-color:var(--bg); --seg-on:var(--line-2); --heat-ink-3:var(--ink); --heat-ink-4:var(--accent-ink);
+  --on-color:var(--bg); --seg-on:var(--line-2); --heat-ink-3:var(--bg); --heat-ink-4:var(--accent-ink);
   --fab-shadow:0 8px 20px rgba(0,0,0,.5); --pat-barra:#4A3F5A;
   --sac-hambre:#E8B04A; --sac-bien:#3D4A44; --sac-pasado:#9AA6E8;
   --e-felicidad:#5CC2A0; --e-ansiedad:#E8B04A; --e-tristeza:#9AA6E8; --e-rabia:#E0786E; --e-culpa:#C2A6E0;
-  --e-miedo:#A9B3AD; --e-aburrimiento:#6E827A; --e-frustracion:#E3A06E; --e-ninguna:#2F6152; --e-otra:#3D4A44;
-  --e-aburr-ink:var(--bg);
+  --e-miedo:#A9B3AD; --e-aburrimiento:#738880; --e-frustracion:#E3A06E; --e-ninguna:#2F6152; --e-otra:#3D4A44;
+  --e-aburr-ink:var(--bg); --ambar-ink:var(--bg);
 }
 *{box-sizing:border-box}
 [hidden]{display:none!important}
@@ -207,15 +232,15 @@ button{cursor:pointer}
 .cal-nav h2{margin:0;font-family:var(--f-display);font-weight:600;font-size:21px;text-align:center;flex:1}
 .cal-nav h2 span{color:var(--ink-2);font-weight:500}
 .mgrid{display:grid;grid-template-columns:30px repeat(7,minmax(0,1fr));gap:5px}
-.dow,.wkn{font-size:12px;color:var(--ink-3);text-align:center;display:grid;place-items:center}
+.dow,.wkn{font-size:12px;color:var(--ink-2);text-align:center;display:grid;place-items:center}
 .wkn.now{color:var(--accent);font-weight:700}
 .mcell{height:46px;min-width:0;border:0;border-radius:12px;background:var(--heat-0);display:grid;align-content:space-between;padding:4px 5px;text-align:left;font-variant-numeric:tabular-nums;color:var(--ink)}
-.mcell b{font-size:11px;font-weight:400;opacity:.85}
+.mcell b{font-size:11px;font-weight:400}
 .mcell strong{justify-self:end;font-family:var(--f-display);font-weight:600;font-size:17px;line-height:1}
 .mcell.blank{background:transparent}
 .mcell.is-today{outline:2px solid var(--ink);outline-offset:1px}
 .h1{background:var(--heat-1)}.h2{background:var(--heat-2)}.h3{background:var(--heat-3);color:var(--heat-ink-3)}.h4{background:var(--heat-4);color:var(--heat-ink-4)}
-.legend{display:flex;align-items:center;flex-wrap:wrap;gap:6px;font-size:12px;color:var(--ink-3);margin-top:12px}
+.legend{display:flex;align-items:center;flex-wrap:wrap;gap:6px;font-size:12px;color:var(--ink-2);margin-top:12px}
 .legend i{display:inline-block;width:14px;height:14px;border-radius:4px}
 .legend .lt{margin-right:4px}
 .ygrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
@@ -256,7 +281,7 @@ details.block > summary::-webkit-details-marker{display:none}
 details.block > summary .bd{width:10px;height:10px;border-radius:50%;flex:none;background:var(--accent)}
 details.block.despues > summary .bd{background:var(--after)}
 details.block > summary h4{flex:1;font-size:17px}
-details.block > summary .op{font-size:13px;color:var(--ink-3)}
+details.block > summary .op{font-size:13px;color:var(--ink-2)}
 .chev{width:28px;height:28px;border-radius:50%;background:var(--surface-2);display:grid;place-items:center;font-size:14px;color:var(--ink-2);flex:none;transition:transform .15s ease}
 details.block[open] > summary .chev{transform:rotate(180deg)}
 details.block .inner{display:grid;gap:14px;margin-top:14px}
@@ -271,7 +296,7 @@ textarea{min-height:64px;resize:vertical}
 .tipos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
 .tipos button{display:flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--line-2);background:var(--field);border-radius:999px;padding:8px 6px;font-size:14px;min-height:42px;color:var(--ink);white-space:nowrap;min-width:0}
 .tipos button .ico{width:18px;height:18px;color:var(--t)}
-.tipos button[aria-pressed="true"]{background:var(--t);border-color:var(--t);color:var(--on-color)}
+.tipos button[aria-pressed="true"]{background:var(--ti);border-color:var(--ti);color:var(--on-color)} /* SEG-17: --ti para que el texto llegue a 4,5:1 */
 .tipos button[aria-pressed="true"] .ico{color:inherit}
 .segrow{display:flex;align-items:center;justify-content:space-between;gap:8px 12px;flex-wrap:wrap}
 .segrow .pick{display:inline-grid;grid-auto-flow:column;background:var(--surface-2);border-radius:14px;padding:3px;gap:3px}
@@ -339,7 +364,12 @@ details.block.contexto > summary .bd{background:var(--ink-3)}
 .row2{display:flex;gap:8px;flex-wrap:wrap}
 .privacy{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--ink-2);margin:18px 4px 4px}
 .privacy .ico{color:var(--accent);margin-top:1px}
-.ver{font-size:12px;color:var(--ink-3);text-align:center;margin:10px 0 0}
+/* D17.5: «Sobre esta app» en Tu espacio */
+details.sobre .inner p{font-size:14px;color:var(--ink-2)}
+details.sobre .inner p b{color:var(--ink)}
+details.sobre .inner a{color:var(--accent);font-weight:700}
+.vaciohoy{margin:0 2px 14px;font-size:14px;color:var(--ink-2)}
+.ver{font-size:12px;color:var(--ink-2);text-align:center;margin:10px 0 0}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(100px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:14px;z-index:30;white-space:nowrap}
 /* ---------- Patrones (D16, §3.14) ---------- */
 .patseg{margin-bottom:12px}
@@ -392,12 +422,12 @@ details.block.contexto > summary .bd{background:var(--ink-3)}
 .t3h{display:flex;align-items:baseline;gap:8px}
 .t3h b{font-size:15px}
 .t3h span{font-size:13px;color:var(--ink-2)}
-.e-felicidad{background:var(--e-felicidad);color:var(--on-color)}.e-ansiedad{background:var(--e-ansiedad);color:var(--on-color)}
+.e-felicidad{background:var(--e-felicidad);color:var(--on-color)}.e-ansiedad{background:var(--e-ansiedad);color:var(--ambar-ink)}
 .e-tristeza{background:var(--e-tristeza);color:var(--on-color)}.e-rabia{background:var(--e-rabia);color:var(--on-color)}
 .e-culpa{background:var(--e-culpa);color:var(--on-color)}.e-miedo{background:var(--e-miedo);color:var(--on-color)}
 .e-aburrimiento{background:var(--e-aburrimiento);color:var(--e-aburr-ink)}.e-frustracion{background:var(--e-frustracion);color:var(--on-color)}
 .e-ninguna{background:var(--e-ninguna);color:var(--ink)}.e-otra{background:var(--e-otra);color:var(--ink)}
-.sac-0{background:var(--sac-hambre);color:var(--ink)}.sac-1{background:var(--sac-bien);color:var(--ink)}.sac-2{background:var(--sac-pasado);color:var(--on-color)}
+.sac-0{background:var(--sac-hambre);color:var(--ambar-ink)}.sac-1{background:var(--sac-bien);color:var(--ink)}.sac-2{background:var(--sac-pasado);color:var(--on-color)}
 .t4{display:grid;gap:10px}
 .t4f{display:grid;grid-template-columns:96px minmax(0,1fr);gap:8px;align-items:center}
 .t4n{display:grid;line-height:1.2}
@@ -584,7 +614,9 @@ body.veil .app,body.veil .dock,body.veil .fade,body.veil #overlay{visibility:hid
 
 <script>
 (function(){
-const VERSION='v0.8.1';
+const VERSION='v0.9';
+/* La clave de guardado y la marca de la copia («app»: 'comida-app') NO cambian con el nombre
+   (D17, punto 4): cambiarlas vaciaría los móviles e invalidaría las copias guardadas. */
 const STORE='comida-app-proto-v1';
 const TIPOS=[['desayuno','Desayuno'],['media_manana','Media mañana'],['comida','Comida'],['merienda','Merienda'],['cena','Cena'],['picoteo','Picoteo']];
 const TIPO_LBL=Object.fromEntries(TIPOS);
@@ -617,11 +649,13 @@ function isoWeek(d){
   t.setUTCDate(t.getUTCDate()+4-(t.getUTCDay()||7));
   return Math.ceil(((t-Date.UTC(t.getUTCFullYear(),0,1))/864e5+1)/7);
 }
-const TODAY=iso(new Date());
+/* SEG-07: «hoy» se vuelve a mirar al pintar, al registrar y al volver a la app (ponerHoy). */
+let TODAY=iso(new Date());
 
 /* ---------- estado ---------- */
 const uid=()=>Math.random().toString(36).slice(2,10);
-let data=load();
+/* Se carga al final, cuando ya existen todas las funciones que sanean (D17.12). */
+let data;
 /* Perfil (D14): nombre y PIN. El PIN nunca se guarda en claro: sal + hash PBKDF2. */
 let perfil={nombre:'',pin:null,bloqueo:'5min',fallos:0,esperaHasta:0};
 try{
@@ -637,10 +671,37 @@ let ui={sec:'hoy',cal:'mes',pat:'resumen',cursor:TODAY,calCursor:TODAY.slice(0,8
 try{const u=JSON.parse(localStorage.getItem(STORE+'-ui')||'null');if(u){if(u.sec==='cal'||u.sec==='pat')ui.sec=u.sec;if(u.pat==='buscar')ui.pat='buscar';if(u.cal==='ano')ui.cal='ano';if(u.posponer)ui.posponer=u.posponer;}}catch(e){}
 
 function load(){
-  try{const raw=localStorage.getItem(STORE);if(raw){const d=JSON.parse(raw);if(d&&d.ingestas){normData(d);return d;}}}catch(e){}
+  let raw=null;
+  try{raw=localStorage.getItem(STORE);if(raw){const d=JSON.parse(raw);if(esObj(d)&&esObj(d.ingestas)){normData(d);ultimoRaw=raw;return d;}}}catch(e){}
+  /* Si había algo y no se ha podido leer, se guarda aparte tal cual antes de que nada lo pise. */
+  if(raw){try{if(!localStorage.getItem(STORE+'-roto'))localStorage.setItem(STORE+'-roto',raw);}catch(e){}}
   return seed();
 }
-function save(){try{localStorage.setItem(STORE,JSON.stringify(data));}catch(e){}}
+/* SEG-02: si el navegador no deja guardar (lleno o bloqueado), se dice; nunca «Guardado» sin haberlo. */
+let guardadoFalla=false;
+/* SEG-10: lo último que esta pestaña ha leído o escrito. Si otra pestaña ha guardado después,
+   refrescar() lo vuelve a leer antes de cambiar nada, para no pisarlo. */
+let ultimoRaw=null;
+function refrescar(){
+  try{const raw=localStorage.getItem(STORE);if(raw&&raw!==ultimoRaw){const d=JSON.parse(raw);if(esObj(d)&&esObj(d.ingestas)){data=normData(d);ultimoRaw=raw;datosVer++;return true;}}}catch(e){}
+  return false;
+}
+function save(){
+  datosVer++;
+  try{const raw=JSON.stringify(data);localStorage.setItem(STORE,raw);ultimoRaw=raw;guardadoFalla=false;}catch(e){guardadoFalla=true;}
+  const b=$('banner');if(b)b.innerHTML=bannerHtml();
+  return !guardadoFalla;
+}
+/* D17.8: pedir al navegador que no borre los datos solo, tras el primer registro (no al abrir:
+   algún navegador lo pregunta y no tiene sentido sin datos). */
+let persistPedida=false;
+function pedirPersistencia(){
+  if(persistPedida||!navigator.storage||!navigator.storage.persist)return;
+  persistPedida=true;
+  navigator.storage.persisted().then(p=>p||navigator.storage.persist()).catch(()=>{});
+}
+/* El aviso de éxito de algo que se ha guardado: si no se ha podido, lo dice. */
+const toastGuardado=m=>toast(guardadoFalla?'No se ha podido guardar':m);
 function saveUi(){try{localStorage.setItem(STORE+'-ui',JSON.stringify({sec:ui.sec,cal:ui.cal,pat:ui.pat,posponer:ui.posponer}));}catch(e){}}
 function savePerfil(){try{localStorage.setItem(STORE+'-perfil',JSON.stringify(perfil));}catch(e){}}
 
@@ -712,9 +773,21 @@ function seed(){
 
 /* ---------- ayudas ---------- */
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const ico=(n,c)=>'<svg class="ico'+(c?' '+c:'')+'" aria-hidden="true"><use href="#i-'+n+'"/></svg>';
-const byDay=f=>Object.values(data.ingestas).filter(x=>x.fecha===f).sort((a,b)=>(a.hora||'99').localeCompare(b.hora||'99'));
-const countDay=f=>Object.values(data.ingestas).reduce((n,x)=>n+(x.fecha===f),0);
+const ico=(n,c)=>'<svg class="ico'+(c?' '+c:'')+'" aria-hidden="true"><use href="#i-'+esc(n)+'"/></svg>';
+/* SEG-22: las ingestas agrupadas por fecha, calculado una vez y rehecho solo cuando cambian los
+   datos (save o refrescar suben datosVer). El Año y exportar un año ya no recorren todo por día. */
+let datosVer=0,idx=null;
+function porDia(){
+  if(!idx||idx.data!==data||idx.ver!==datosVer){
+    const m=new Map();
+    Object.values(data.ingestas).forEach(x=>{const l=m.get(x.fecha);if(l)l.push(x);else m.set(x.fecha,[x]);});
+    m.forEach(l=>l.sort((a,b)=>(a.hora||'99').localeCompare(b.hora||'99')));
+    idx={data,ver:datosVer,m};
+  }
+  return idx.m;
+}
+const byDay=f=>(porDia().get(f)||[]).slice();
+const countDay=f=>(porDia().get(f)||[]).length;
 /* Completa (D16): dónde, pantalla y etiquetas son contexto y no cuentan como «antes». */
 const hasAfter=x=>x.emoDespues.length||x.emoDespuesOtra||x.pensDespues||x.saciedad||x.energia||x.sintomas.length||x.sintomasOtros;
 const hasBefore=x=>x.hambre||x.emoAntes.length||x.emoAntesOtra||x.pensAntes;
@@ -744,10 +817,58 @@ function normDia(di){
   }
   return di;
 }
+/* ---------- sanear (D17.12) ----------
+   Lo que llega de una copia, o lo que ya hay guardado, se lleva campo a campo a su tipo: el campo
+   que no se entiende se queda vacío y el registro entra. Solo se aparta el registro sin id, sin
+   fecha válida o con un tipo que no existe. Nunca se usa un objeto de fuera tal cual (SEG-19). */
+const esObj=v=>!!v&&typeof v==='object'&&!Array.isArray(v);
+const RE_ID=/^[A-Za-z0-9_-]{1,40}$/;
+const idValido=v=>typeof v==='string'&&RE_ID.test(v)&&!(v in Object.prototype)&&v!=='__proto__'&&v!=='prototype';
+const fechaValida=v=>typeof v==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(v)&&iso(parse(v))===v;
+const txt=v=>typeof v==='string'?v:typeof v==='number'&&isFinite(v)?String(v):'';
+const uno=(v,opts)=>typeof v==='string'&&opts.includes(v)?v:'';
+const varios=(v,opts)=>Array.isArray(v)?[...new Set(v.filter(e=>typeof e==='string'&&opts.includes(e)))]:[];
+const horaValida=v=>{if(typeof v!=='string')return '';const m=v.match(/^(\d{2}):(\d{2})$/);return m&&+m[1]<24&&+m[2]<60?v:'';};
+function sanearIngesta(x){
+  if(!esObj(x)||!idValido(x.id)||!fechaValida(x.fecha)||!Object.hasOwn(TIPO_LBL,x.tipo))return null;
+  const etq=[],ks=new Set();
+  (Array.isArray(x.etiquetas)?x.etiquetas:[]).forEach(t=>{const n=limpiarEtq(txt(t)),k=claveEtq(n);if(k&&!ks.has(k)&&etq.length<ETQ_MAX){ks.add(k);etq.push(n);}});
+  const o=Object.assign(ingVacia(),{id:x.id,fecha:x.fecha,tipo:x.tipo,hora:horaValida(x.hora),alimentos:txt(x.alimentos),
+    hambre:uno(x.hambre,HAMBRE),lugar:uno(x.lugar,LUGAR),pantalla:uno(x.pantalla,['Sí','No']),
+    emoAntes:varios(x.emoAntes,EMOCIONES),emoAntesOtra:txt(x.emoAntesOtra),pensAntes:txt(x.pensAntes),
+    emoDespues:varios(x.emoDespues,EMOCIONES),emoDespuesOtra:txt(x.emoDespuesOtra),pensDespues:txt(x.pensDespues),
+    saciedad:uno(x.saciedad,SACIEDAD),energia:uno(x.energia,ENERGIA.concat('Otro')),energiaOtro:txt(x.energiaOtro),
+    sintomas:varios(x.sintomas,SINTOMAS.concat('Otros')),sintomasOtros:txt(x.sintomasOtros),etiquetas:etq});
+  if(x.ejemplo===true)o.ejemplo=true;
+  return o;
+}
+function sanearDia(di){
+  if(!esObj(di))return null;
+  const o={};
+  ['aguaTexto','actividad','reflexiones','predominantes','orgullo','gratitud'].forEach(k=>{const v=txt(di[k]);if(v)o[k]=v;});
+  if(typeof di.agua==='string')o.agua=di.agua;
+  normDia(o);
+  [['agua',STEPS.agua.max],['actividadHoras',STEPS.actividadHoras.max],['suenoHoras',STEPS.suenoHoras.max]].forEach(([k,max])=>{
+    if(k==='agua'&&typeof o.agua==='number')return;
+    const v=typeof di[k]==='string'&&di[k].trim()!==''?Number(di[k].replace(',','.')):di[k];
+    if(typeof v==='number'&&isFinite(v)&&v>=0&&v<=max)o[k]=v;
+  });
+  if(typeof o.agua!=='number')delete o.agua;
+  const cal=uno(di.suenoCalidad,CALIDAD);if(cal)o.suenoCalidad=cal;
+  if(di.ejemplo===true)o.ejemplo=true;
+  return o;
+}
+/* Al cargar: lo que no se puede leer no se borra, se aparta (no se pinta ni se exporta). */
 function normData(d){
-  Object.keys(d.ingestas).forEach(k=>{d.ingestas[k]=Object.assign(ingVacia(),d.ingestas[k]);});
-  d.dias=d.dias||{};Object.values(d.dias).forEach(normDia);
+  const ing=esObj(d.ingestas)?d.ingestas:{},dias=esObj(d.dias)?d.dias:{};
+  const apartados=Array.isArray(d.apartados)?d.apartados:[];
+  d.ingestas={};
+  Object.keys(ing).forEach(k=>{const x=sanearIngesta(ing[k]);if(x&&x.id===k)d.ingestas[k]=x;else apartados.push(ing[k]);});
+  d.dias={};
+  Object.keys(dias).forEach(f=>{const di=fechaValida(f)?sanearDia(dias[f]):null;if(di&&Object.keys(di).length)d.dias[f]=di;else if(!fechaValida(f))apartados.push({fecha:f,dia:dias[f]});});
+  if(apartados.length)d.apartados=apartados;else delete d.apartados;
   if(!Array.isArray(d.etiquetasDistintas))d.etiquetasDistintas=[];
+  d.etiquetasDistintas=d.etiquetasDistintas.filter(p=>Array.isArray(p)&&p.length===2&&p.every(k=>typeof k==='string'));
   return d;
 }
 const lower=v=>v?v.toLowerCase():'';
@@ -778,11 +899,20 @@ const inicial=()=>perfil.nombre?perfil.nombre.trim()[0].toUpperCase():'';
 
 /* ---------- pintar ---------- */
 const $=id=>document.getElementById(id);
+/* Si ha cambiado el día con la app abierta: quien estaba viendo hoy pasa al día nuevo;
+   quien miraba otro día a propósito se queda donde estaba. */
+function ponerHoy(){
+  const h=iso(new Date());if(h===TODAY)return false;
+  if(ui.cursor===TODAY)ui.cursor=h;
+  if(exp.ref===TODAY)exp.ref=h;
+  TODAY=h;return true;
+}
 function render(){
+  ponerHoy();
   const hoyD=parse(TODAY);
   const me=inicial();
   $('top').innerHTML='<div class="tt">'+(ui.sec==='hoy'
-      ?'<p class="kick">'+esc(cap(DIAS[hoyD.getDay()])+', '+hoyD.getDate()+' de '+MESES[hoyD.getMonth()])+'</p><h1>'+(perfil.nombre?'Hola, '+esc(perfil.nombre):'Comida App')+'</h1>'
+      ?'<p class="kick">'+esc(cap(DIAS[hoyD.getDay()])+', '+hoyD.getDate()+' de '+MESES[hoyD.getMonth()])+'</p><h1>'+(perfil.nombre?'Hola, '+esc(perfil.nombre):'Comida Consciente')+'</h1>'
       :ui.sec==='cal'?'<h1>Calendario</h1>'
       :'<p class="kick">'+esc(periodoTxt()+' · '+plural(periodoIng().length,'ingesta','ingestas'))+'</p><h1>Patrones</h1>')+'</div>'
     +'<div class="acts">'+(ui.sec==='pat'?'':'<button class="round" id="exportBtn" aria-label="Exportar">'+ico('exportar')+'</button>')
@@ -792,8 +922,12 @@ function render(){
   document.body.classList.toggle('con-ver',ui.sec==='pat'&&ui.pat==='buscar'&&!pat.vista&&!!Object.keys(data.ingestas).length);
   document.querySelectorAll('.bar .sec').forEach(b=>{if(b.dataset.sec===ui.sec)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});
 }
+/* Mudanza (D17.3): esta es la dirección vieja. Los datos siguen aquí hasta que se recupere la copia en la nueva. */
+const NUEVA='https://comida-consciente.github.io/';
 function bannerHtml(){
-  if(data.ejemplos)return '<div class="banner"><span>Estás viendo <b>datos de ejemplo</b>.</span><div class="row2"><button class="btn primary small" id="clearEx">Empezar en blanco</button></div></div>';
+  if(!guardadoFalla)return '<div class="banner" role="alert"><span><b>La app se ha mudado</b> a comida-consciente.github.io. Tus datos siguen aquí: guarda una copia y recupérala en la dirección nueva.</span><div class="row2"><button class="btn primary small" id="bannerBackup">Guardar copia</button><a class="btn sec small" href="'+NUEVA+'">Ir a la nueva</a></div></div>';
+  if(guardadoFalla)return '<div class="banner" role="alert"><span>No se ha podido guardar en este móvil. Guarda una copia antes de cerrar la app.</span><div class="row2"><button class="btn primary small" id="bannerBackup">Guardar copia</button></div></div>';
+  if(data.ejemplos)return '<div class="banner"><span>Estás viendo <b>datos de ejemplo</b>. Lo que apuntes se queda solo en este móvil.</span><div class="row2"><button class="btn primary small" id="clearEx">Empezar en blanco</button></div></div>';
   const reales=Object.values(data.ingestas).filter(x=>!x.ejemplo).length;
   const dias=data.ultimaCopia?Math.floor((Date.now()-new Date(data.ultimaCopia).getTime())/864e5):null;
   if(reales<5||(dias!==null&&dias<7))return '';
@@ -817,6 +951,7 @@ function renderHoy(){
   const tit=dif===0?'Hoy':dif===1?'Ayer':DIAS[c.getDay()]+' '+c.getDate();
   h+='<div class="dayhead"><h2>'+esc(cap(tit))+'</h2><span class="cnt">'+items.length+(items.length===1?' registro':' registros')+(falta?' · <b>'+falta+' por completar</b>':'')+'</span>'
     +(dif!==0?'<button class="linkbtn" id="goToday">Volver a hoy</button>':'')+'</div>';
+  if(!Object.keys(data.ingestas).length)h+='<p class="vaciohoy">Lo que apuntes se queda en este móvil. Desde Tu espacio puedes guardar una copia.</p>';
   return h+'<div class="tl">'+lineaDia(items)+'</div>';
 }
 /* Orden de la línea (§3.4): lo registrado por hora; cada hueco de una principal va antes de
@@ -858,18 +993,18 @@ function ingItem(x){
   const ha=hasBefore(x),hd=hasAfter(x),hora=x.hora||'sin hora',lbl=TIPO_LBL[x.tipo];
   /* Sin nada anotado (solo tipo y hora): como un hueco, pero con su hora. */
   if(!x.alimentos&&!ha&&!hd)
-    return '<div class="ti t-'+x.tipo+'"><span class="dot d-gap">'+ico(x.tipo)+'</span><button class="gapc" data-edit="'+x.id+'"><span><b>'+lbl+'</b> · '+esc(hora)+' · sin anotar</span><span class="plus" aria-hidden="true">+</span></button></div>';
+    return '<div class="ti t-'+esc(x.tipo)+'"><span class="dot d-gap">'+ico(x.tipo)+'</span><button class="gapc" data-edit="'+esc(x.id)+'"><span><b>'+lbl+'</b> · '+esc(hora)+' · sin anotar</span><span class="plus" aria-hidden="true">+</span></button></div>';
   const head='<div class="chd"><span class="k">'+lbl+'</span><span class="h">'+esc(hora)+'</span>';
   if(completa(x)){
     const a=emoList(x.emoAntes,x.emoAntesOtra).join(', '),d=emoList(x.emoDespues,x.emoDespuesOtra).join(', ');
     const en=x.energia==='Otro'?x.energiaOtro:x.energia;
-    return '<div class="ti t-'+x.tipo+'"><span class="dot d-full">'+ico(x.tipo)+'</span><button class="card" data-edit="'+x.id+'">'+head+'</div>'
+    return '<div class="ti t-'+esc(x.tipo)+'"><span class="dot d-full">'+ico(x.tipo)+'</span><button class="card" data-edit="'+esc(x.id)+'">'+head+'</div>'
       +'<div class="food">'+esc(x.alimentos)+'</div><div class="cmeta">'+esc((a||'—')+' → '+(d||'—')+(en?' · energía '+en.toLowerCase():'')+(x.saciedad?' · '+lower(x.saciedad):''))+'</div></button></div>';
   }
   const tag=!ha&&!hd?'Falta el antes y el después':!hd?'Falta el después':!ha?'Falta el antes':'Faltan los alimentos';
-  const add=(lado,part)=>'<button class="half add '+lado+'" data-edit="'+x.id+'" data-part="'+part+'" aria-label="Añadir el '+part+' de '+esc(lbl)+'"><h5>'+(part==='antes'?'Antes':'Después')+'</h5>+ Añadir</button>';
-  return '<div class="ti t-'+x.tipo+'"><span class="dot d-half">'+ico(x.tipo)+'</span><div class="card open">'
-    +'<button class="hit" data-edit="'+x.id+'" aria-label="Editar '+esc(lbl+' '+hora)+'"></button><div class="body">'
+  const add=(lado,part)=>'<button class="half add '+lado+'" data-edit="'+esc(x.id)+'" data-part="'+part+'" aria-label="Añadir el '+part+' de '+esc(lbl)+'"><h5>'+(part==='antes'?'Antes':'Después')+'</h5>+ Añadir</button>';
+  return '<div class="ti t-'+esc(x.tipo)+'"><span class="dot d-half">'+ico(x.tipo)+'</span><div class="card open">'
+    +'<button class="hit" data-edit="'+esc(x.id)+'" aria-label="Editar '+esc(lbl+' '+hora)+'"></button><div class="body">'
     +head+'<span class="tag">'+tag+'</span></div>'
     +'<div class="food'+(x.alimentos?'':' none')+'">'+esc(x.alimentos||'Sin alimentos anotados')+'</div>'
     +'<div class="halves">'+(ha?halfHtml(x,'a'):add('a','antes'))+(hd?halfHtml(x,'d'):add('d','despues'))+'</div>'
@@ -1121,7 +1256,7 @@ function t3(P){
     const segs=orden.slice(0,3).map(([v,s])=>[v,s,[v]]).concat(resto.length?[['Otras',resto.reduce((a,r)=>a+r[1],0),resto.map(r=>r[0])]]:[]);
     return '<div class="t3f"><div class="t3h"><b>Con '+esc(lower(e))+'</b><span>'+plural(xs.length,'ingesta','ingestas')+'</span></div><div class="stack">'
       +segs.map(([v,s,lista])=>{const p=100*s/xs.length,pr=Math.round(p);
-        return verBtn({emoAntes:[e],emoDespues:lista},'Con '+lower(e)+' antes y '+(v==='Otras'?'otras emociones':lower(v))+' después',p>=18?esc(v)+' '+pctTxt(pr):'','sg e-'+(v==='Otras'?'otra':emoSlug(v)),'Con '+lower(e)+' antes, '+v+' después: '+pctTxt(pr),'flex:'+p.toFixed(2)+' 1 0');}).join('')
+        return verBtn({emoAntes:[e],emoDespues:lista},'Con '+lower(e)+' antes y '+(v==='Otras'?'otras emociones':lower(v))+' después',p>=18?esc(v)+' '+pctTxt(pr):'','sg e-'+(v==='Otras'?'otra':esc(emoSlug(v))),'Con '+lower(e)+' antes, '+v+' después: '+pctTxt(pr),'flex:'+p.toFixed(2)+' 1 0');}).join('')
       +'</div></div>';
   }).join('');
   return tarjeta(tit,sub,body);
@@ -1259,7 +1394,7 @@ function renderRes(){
 function comun(xs){
   const f=pat.filtros,top=vals=>{const m=new Map();vals.forEach(([k,t,c])=>{const e=m.get(k);if(e)e[2]++;else m.set(k,[t,c,1]);});return [...m.values()].sort((a,b)=>b[2]-a[2]).slice(0,3);};
   const filas=[];
-  if(!f.tipos.length)filas.push(['Momento',top(xs.map(x=>[x.tipo,TIPO_LBL[x.tipo]||x.tipo,'ct t-'+x.tipo]))]);
+  if(!f.tipos.length)filas.push(['Momento',top(xs.map(x=>[x.tipo,TIPO_LBL[x.tipo]||x.tipo,'ct t-'+esc(x.tipo)]))]);
   if(!f.hambre)filas.push(['Hambre',top(xs.filter(x=>x.hambre).map(x=>[x.hambre,hambreTxt(x.hambre)]))]);
   if(!f.emoDespues.length)filas.push(['Después',top(xs.flatMap(x=>emosDe(x,'d').map(e=>[e,e])))]);
   if(!f.saciedad)filas.push(['Cómo te quedaste',top(xs.filter(x=>x.saciedad).map(x=>[x.saciedad,x.saciedad]))]);
@@ -1271,7 +1406,7 @@ function comun(xs){
 }
 function resItem(x){
   const a=emoList(x.emoAntes,x.emoAntesOtra).join(', '),d=emoList(x.emoDespues,x.emoDespuesOtra).join(', ');
-  return '<button type="button" class="ritem t-'+x.tipo+'" data-edit="'+x.id+'"><span class="rdot">'+ico(x.tipo)+'</span><span class="rbody">'
+  return '<button type="button" class="ritem t-'+esc(x.tipo)+'" data-edit="'+esc(x.id)+'"><span class="rdot">'+ico(x.tipo)+'</span><span class="rbody">'
     +'<span class="rh"><span class="k">'+esc(TIPO_LBL[x.tipo]||x.tipo)+'</span><span class="h">'+esc(x.hora||'sin hora')+'</span>'+(x.hambre?'<span class="rhb">Hambre: '+esc(lower(x.hambre))+'</span>':'')+'</span>'
     +'<span class="food'+(x.alimentos?'':' none')+'">'+esc(x.alimentos||'Sin alimentos anotados')+'</span>'
     +(a||d||x.saciedad?'<span class="rem">'+esc(a||'—')+' → <b>'+esc(d||'—')+'</b>'+(x.saciedad?' · '+esc(lower(x.saciedad)):'')+'</span>':'')
@@ -1317,10 +1452,11 @@ function cambiarClave(de,a){
   data.etiquetasDistintas=(data.etiquetasDistintas||[]).map(p=>p.map(k=>k===de?a:k)).filter(p=>p[0]&&p[1]&&p[0]!==p[1]);
 }
 function fusionarEtq(de,a){
+  refrescar();
   const dest=catalogoEtq().find(c=>c.clave===a);if(!dest||de===a)return;
   reescribirEtq(l=>l.map(t=>claveEtq(t)===de?dest.nombre:t));cambiarClave(de,a);save();
 }
-function borrarEtq(k){reescribirEtq(l=>l.filter(t=>claveEtq(t)!==k));cambiarClave(k,'');save();}
+function borrarEtq(k){refrescar();reescribirEtq(l=>l.filter(t=>claveEtq(t)!==k));cambiarClave(k,'');save();}
 function openEtq(){
   if(!catalogoEtq().length){openMe();return;}
   if(!$('etqSheet')){
@@ -1366,14 +1502,15 @@ function renGuardar(){
   const de=etqUi.ren,v=$('f-ren').value,n=limpiarEtq(v),k=claveEtq(n);if(!de||!n)return;
   const ex=catalogoEtq().find(c=>c.clave===k&&c.clave!==de);
   if(ex&&!etqUi.renAviso){etqUi.renAviso='Ya existe «'+ex.nombre+'»: se fusionarán las dos.';etqUi.renVal=v;pintarEtqHoja();return;}
-  if(ex){fusionarEtq(de,k);etqUi={};pintarEtqHoja();render();toast('Etiquetas fusionadas');return;}
-  reescribirEtq(l=>l.map(t=>claveEtq(t)===de?n:t));cambiarClave(de,k);save();
-  etqUi={};pintarEtqHoja();render();toast('Etiqueta renombrada');
+  if(ex){fusionarEtq(de,k);etqUi={};pintarEtqHoja();render();toastGuardado('Etiquetas fusionadas');return;}
+  refrescar();reescribirEtq(l=>l.map(t=>claveEtq(t)===de?n:t));cambiarClave(de,k);save();
+  etqUi={};pintarEtqHoja();render();toastGuardado('Etiqueta renombrada');
 }
 
 /* ---------- hoja: ingesta ---------- */
 let draft=null;
 function openIngesta(id,tipo,part){
+  if(ponerHoy())render();
   const now=new Date();
   volverRes=!!id&&ui.sec==='pat'&&pat.vista==='res';
   draft=id?JSON.parse(JSON.stringify(data.ingestas[id])):Object.assign(ingVacia(),{id:null,fecha:ui.sec==='hoy'?ui.cursor:TODAY,tipo:tipo||guessTipo(now),hora:pad(now.getHours())+':'+pad(now.getMinutes()),alimentos:''});
@@ -1491,10 +1628,10 @@ function saveIngesta(){
   x.sintomas=readPick('sintomas');x.sintomasOtros=x.sintomas.includes('Otros')?$('f-sintomasOtros').value.trim():'';
   if(!x.id)x.id=uid();
   delete x.ejemplo;
-  data.ingestas[x.id]=x;save();
+  refrescar();data.ingestas[x.id]=x;if(save())pedirPersistencia();
   /* Desde Resultados se vuelve a Resultados, recalculado (§3.14). */
-  if(volverRes){volverRes=false;close();render();toast('Guardado');return;}
-  close();ui.sec='hoy';ui.cursor=x.fecha;saveUi();render();toast('Guardado');
+  if(volverRes){volverRes=false;close();render();toastGuardado('Guardado');return;}
+  close();ui.sec='hoy';ui.cursor=x.fecha;saveUi();render();toastGuardado('Guardado');
 }
 
 /* ---------- hoja: cierre del día ---------- */
@@ -1515,7 +1652,7 @@ function openDay(){
     +'</form></div>';
   document.body.style.overflow='hidden';
 }
-function stepOut(k,v){const has=v!=null&&v!=='';return '<output id="d-'+k+'" data-v="'+(has?v:'')+'" class="'+(has?'':'empty')+'">'+(has?STEPS[k].fmt(Number(v)):'Sin anotar')+'</output>';}
+function stepOut(k,v){const has=v!=null&&v!=='';return '<output id="d-'+k+'" data-v="'+(has?esc(v):'')+'" class="'+(has?'':'empty')+'">'+(has?STEPS[k].fmt(Number(v)):'Sin anotar')+'</output>';}
 function stepBy(k,dir){
   const o=$('d-'+k),c=STEPS[k],cur=o.dataset.v===''?null:Number(o.dataset.v);
   let v;
@@ -1527,9 +1664,10 @@ function saveDay(){
   const o={};['actividad','reflexiones','predominantes','orgullo','gratitud'].forEach(k=>{const v=$('d-'+k).value.trim();if(v)o[k]=v;});
   Object.keys(STEPS).forEach(k=>{const v=$('d-'+k).dataset.v;if(v!=='')o[k]=Number(v);});
   const cal=readPick('suenoCalidad')[0];if(cal)o.suenoCalidad=cal;
+  refrescar();
   const prev=data.dias[ui.cursor]||{};if(prev.aguaTexto&&o.agua==null)o.aguaTexto=prev.aguaTexto;
   if(Object.keys(o).length)data.dias[ui.cursor]=o;else delete data.dias[ui.cursor];
-  save();close();render();toast('Guardado');
+  save();close();render();toastGuardado('Guardado');
 }
 
 /* ---------- exportar ---------- */
@@ -1563,7 +1701,7 @@ function rangeLabel(){
 const enOf=x=>x.energia==='Otro'?x.energiaOtro:x.energia;
 const sintOf=x=>x.sintomas.filter(v=>v!=='Otros').concat(x.sintomasOtros?[x.sintomasOtros]:[]);
 /* xs: las ingestas de ese día que se exportan (todas, salvo en «Esta lista», que va sin cierres). */
-function dayFull(f,lvl,xs){
+function dayFull(f,lvl,xs,di){
   const h='#'.repeat(lvl),L=[h+' '+cap(longDate(f)),''];
   (xs||byDay(f)).forEach(x=>{
     L.push(h+'# '+TIPO_LBL[x.tipo]+' · '+(x.hora||'sin hora'));
@@ -1578,12 +1716,11 @@ function dayFull(f,lvl,xs){
     if(x.etiquetas.length)L.push('- Etiquetas: '+x.etiquetas.join(', '));
     L.push('');
   });
-  const di=xs?{}:data.dias[f]||{};
-  const c=cierreRows(di).filter(r=>r[3]);
+  const c=cierreRows(di||{}).filter(r=>r[3]);
   if(c.length){L.push(h+'# Cierre del día');c.forEach(([,l,,v])=>L.push('- '+l+': '+v));L.push('');}
-  return L.join('\n');
+  return L.map(enUnaLinea).join('\n');
 }
-function dayShort(f,xs){
+function dayShort(f,xs,di){
   const d=parse(f),L=[cap(DIAS[d.getDay()].slice(0,3))+' '+pad(d.getDate())+'/'+pad(d.getMonth()+1)];
   (xs||byDay(f)).forEach(x=>{
     let t='  '+(x.hora||'--:--')+' '+TIPO_LBL[x.tipo]+' — '+(x.alimentos||'—');
@@ -1598,17 +1735,22 @@ function dayShort(f,xs){
     if(x.etiquetas.length)t+=' | '+x.etiquetas.map(e=>'#'+e.toLowerCase()).join(' ');
     L.push(t);
   });
-  const di=xs?{}:data.dias[f]||{};
-  const c=cierreRows(di).filter(r=>r[3]).map(([,l,,v])=>l+': '+v);
+  const c=cierreRows(di||{}).filter(r=>r[3]).map(([,l,,v])=>l+': '+v);
   if(c.length)L.push('  Cierre: '+c.join(' · '));
-  return L.join('\n');
+  return L.map(enUnaLinea).join('\n');
 }
-function csvCell(v){v=String(v??'');return /[;"\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}
+/* D17.13: una celda que empieza por = + - @, tabulador o \r lleva ' delante para que Excel o
+   Numbers no la calculen como fórmula (OWASP); \r también se entrecomilla. */
+function csvCell(v){v=String(v??'');if(/^[=+\-@\t\r]/.test(v))v="'"+v;return /[;"\n\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}
+/* SEG-16: en Completo y Resumido, un texto de varias líneas sale en una sola, con « / ». */
+const enUnaLinea=t=>String(t).replace(/[ \t]*[\r\n]+[ \t]*/g,' / ');
 function exportText(fmt){
   /* «Esta lista» (Resultados): solo esas ingestas, en su orden por día, sin cierres. */
-  const lista=exp.scope==='lista'?exp.xs.map(id=>data.ingestas[id]).filter(Boolean):null;
-  const days=lista?[...new Set(lista.map(x=>x.fecha))]:rangeDays().filter(f=>countDay(f)||data.dias[f]);
-  const de=f=>lista?lista.filter(x=>x.fecha===f):byDay(f);
+  /* Los datos de ejemplo nunca se exportan (D17.11). «Esta lista» va sin cierres. */
+  const lista=exp.scope==='lista'?exp.xs.map(id=>data.ingestas[id]).filter(x=>x&&!x.ejemplo):null;
+  const cierre=f=>lista?{}:(data.dias[f]&&!data.dias[f].ejemplo?data.dias[f]:{});
+  const de=f=>lista?lista.filter(x=>x.fecha===f):byDay(f).filter(x=>!x.ejemplo);
+  const days=lista?[...new Set(lista.map(x=>x.fecha))]:rangeDays().filter(f=>de(f).length||Object.keys(cierre(f)).length);
   if(fmt==='tabla'){
     /* saciedad y etiquetas (D16) van al final, para no mover las columnas que ya se usan. */
     const rows=[['fecha','hora','comida','alimentos','hambre_antes','lugar','pantalla','emociones_antes','pensamientos_antes','emociones_despues','pensamientos_despues','energia','sintomas','saciedad','etiquetas']];
@@ -1616,11 +1758,9 @@ function exportText(fmt){
     return rows.map(r=>r.map(csvCell).join(';')).join('\n');
   }
   if(!days.length)return rangeTitle()+'\n\n(Sin registros)';
-  if(lista&&fmt==='resumido')return rangeTitle()+'\n\n'+days.map(f=>dayShort(f,de(f))).join('\n\n');
-  if(lista)return '# '+rangeTitle()+'\n\n'+days.map(f=>dayFull(f,2,de(f))).join('\n');
-  if(fmt==='resumido')return rangeTitle()+'\n\n'+days.map(f=>dayShort(f)).join('\n\n');
-  if(exp.scope==='dia')return '# '+rangeTitle()+'\n\n'+dayFull(days[0],2).split('\n').slice(2).join('\n');
-  return '# '+rangeTitle()+'\n\n'+days.map(f=>dayFull(f,2)).join('\n');
+  if(fmt==='resumido')return rangeTitle()+'\n\n'+days.map(f=>dayShort(f,de(f),cierre(f))).join('\n\n');
+  if(exp.scope==='dia')return '# '+rangeTitle()+'\n\n'+dayFull(days[0],2,de(days[0]),cierre(days[0])).split('\n').slice(2).join('\n');
+  return '# '+rangeTitle()+'\n\n'+days.map(f=>dayFull(f,2,de(f),cierre(f))).join('\n');
 }
 function openExport(lista){
   /* Por defecto: desde Hoy, el día que se ve; desde Calendario, el mes o el año que se ve.
@@ -1673,7 +1813,7 @@ async function saveExport(){
   const dl=await getDownloader();
   if(!dl){toast('Aquí no se puede guardar el archivo: usa Copiar');return;}
   const ext=expFmt==='tabla'?'csv':expFmt==='resumido'?'txt':'md';
-  const name='comida-app-'+exp.scope+'-'+exp.ref+'.'+ext;
+  const name='comida-consciente-'+exp.scope+'-'+exp.ref+'.'+ext;
   try{await dl.save({filename:name,data:(ext==='csv'?'﻿':'')+$('expTxt').value});toast('Archivo guardado');}
   catch(e){if(!(e&&e.code==='declined'))toast('No se ha podido guardar: usa Copiar');}
 }
@@ -1690,9 +1830,22 @@ function openMe(){
     +pinBlock()+etqCard()
     +'<div class="block"><div class="bk-h"><span class="ic">'+ico('descarga')+'</span><div><h4>Copia de seguridad</h4><small>'+esc(ultimaCopiaTxt())+'</small></div></div>'
     +'<div class="row2"><button class="btn primary" data-bk="guardar">Guardar copia</button><button class="btn sec" data-bk="recuperar">Recuperar</button></div></div>'
-    +'<p class="privacy">'+ico('escudo')+'<span>Tus datos se guardan solo en este móvil. No hay servidor ni cuentas: nadie más puede verlos.</span></p>'
-    +'<p class="ver">Comida App '+VERSION+'</p></div></div>';
+    +sobreBlock()
+    +'<p class="privacy">'+ico('escudo')+'<span>Tus datos se guardan solo en este móvil, sin servidor ni cuentas: no se envían a nadie. Quien use tu móvil puede verlos si no pones PIN.</span></p>'
+    +'<p class="ver">Comida Consciente '+VERSION+'</p></div></div>';
   document.body.style.overflow='hidden';
+}
+/* D17.5: qué es, dónde están los datos, iPhone, que no es una herramienta médica, borrar todo y licencia. */
+const CODIGO_URL='https://github.com/comida-consciente/comida-consciente.github.io';
+function sobreBlock(){
+  return '<details class="block sobre"><summary><span class="bd"></span><span class="tw"><h4>Sobre esta app</h4></span><span class="chev" aria-hidden="true">⌄</span></summary><div class="inner">'
+    +'<p><b>Qué es.</b> Un registro de lo que comes y de cómo te sientes antes y después. Sirve para darte cuenta, no para controlar: no cuenta calorías ni pone notas.</p>'
+    +'<p><b>Dónde están tus datos.</b> Solo en este navegador, en este móvil. No hay servidor, ni cuentas, ni estadísticas de uso. Si borras los datos del navegador, se pierden: guarda una copia de vez en cuando.</p>'
+    +'<p><b>En iPhone.</b> Añádela a la pantalla de inicio (Compartir → «Añadir a pantalla de inicio»). Si no, Safari puede borrar los datos de una web que no abres en 7 días.</p>'
+    +'<p><b>No es una herramienta médica</b> ni da consejos de alimentación. Lo que veas en Patrones son pistas para pensar o para comentar con un profesional.</p>'
+    +'<div id="wipeBox"><button type="button" class="btn danger" id="wipeMe">Borrar todos mis datos</button></div>'
+    +'<p>© 2026 Iñigo Caraballo · Todos los derechos reservados · <a href="'+CODIGO_URL+'" target="_blank" rel="noopener noreferrer">Código en GitHub</a></p>'
+    +'</div></details>';
 }
 function pinBlock(){
   const on=!!perfil.pin;
@@ -1729,14 +1882,16 @@ function openBackup(tab){
 }
 function backupJson(){
   /* v3 (D16): saciedad y etiquetas en cada ingesta, y las parejas de etiquetas «No son la misma». Nunca el PIN. */
-  const o={app:'comida-app',version:3,exportado:new Date().toISOString(),ingestas:Object.values(data.ingestas),dias:data.dias,etiquetasDistintas:data.etiquetasDistintas||[]};
+    /* Los datos de ejemplo nunca van en la copia (D17.11). */
+  const dias=Object.fromEntries(Object.entries(data.dias).filter(([,di])=>!di.ejemplo));
+  const o={app:'comida-app',version:3,exportado:new Date().toISOString(),ingestas:Object.values(data.ingestas).filter(x=>!x.ejemplo),dias,etiquetasDistintas:data.etiquetasDistintas||[]};
   if(perfil.nombre)o.perfil={nombre:perfil.nombre};
   return JSON.stringify(o,null,2);
 }
 async function saveBackup(){
-  const json=backupJson(),name='comida-app-copia-'+TODAY+'.json';
+  const json=backupJson(),name='comida-consciente-copia-'+TODAY+'.json';
   const dl=await getDownloader();
-  const done=()=>{data.ultimaCopia=new Date().toISOString();save();toast('Copia guardada');render();openBackup();};
+  const done=()=>{refrescar();data.ultimaCopia=new Date().toISOString();save();toast('Copia guardada');render();openBackup();};
   const fallback=msg=>showBackupText(msg);
   if(!dl){fallback('Aquí no se puede descargar el archivo. Copia este texto y guárdalo en Notas o en un archivo .json:');return;}
   try{await dl.save({filename:name,data:json});done();}
@@ -1744,7 +1899,7 @@ async function saveBackup(){
 }
 function showBackupText(msg){
   $('saveFallback').innerHTML='<p class="status">'+esc(msg||'Copia este texto y guárdalo en Notas. Para recuperarlo, pégalo en «Recuperar copia → Desde texto».')+'</p><textarea class="export" id="expTxt" readonly>'+esc(JSON.stringify(JSON.parse(backupJson())))+'</textarea><button class="btn primary" id="copyBtn">Copiar texto</button>';
-  data.ultimaCopia=new Date().toISOString();save();render();
+  refrescar();data.ultimaCopia=new Date().toISOString();save();render();
 }
 function readImport(file){
   const r=new FileReader();
@@ -1755,13 +1910,14 @@ function parseImport(text){
   try{
     const o=JSON.parse(String(text).trim());
     if(!o||o.app!=='comida-app'||!Array.isArray(o.ingestas))throw 0;
-    const m=mergeImport(o),fecha=esc(new Date(o.exportado).toLocaleDateString('es-ES'));
+    const m=mergeImport(o),fecha=m.exportado?'del '+esc(new Date(m.exportado).toLocaleDateString('es-ES')):'sin fecha';
+    const noLeidos=m.malas?' '+(m.malas===1?'1 registro no se ha podido leer':m.malas+' registros no se han podido leer')+'.':'';
     const pl=(n,a,b)=>n+' '+(n===1?a:b);
-    if(!m.nuevas&&!m.completadas&&!m.dias&&!m.nombre){pendingImport=null;$('importMsg').innerHTML='<div class="confirm"><span>Este móvil ya tiene todo lo que hay en esta copia (del '+fecha+'). No hay nada que añadir.</span></div>';return;}
-    pendingImport=m;
+    if(!m.nuevas&&!m.completadas&&!m.dias&&!m.nombre){pendingImport=null;$('importMsg').innerHTML='<div class="confirm"><span>Este móvil ya tiene todo lo que hay en esta copia ('+fecha+'). No hay nada que añadir.'+noLeidos+'</span></div>';return;}
+    pendingImport=m;m.o=o;
     const q=[];if(m.nuevas)q.push('<b>'+pl(m.nuevas,'comida nueva','comidas nuevas')+'</b>');if(m.completadas)q.push('huecos en <b>'+pl(m.completadas,'comida','comidas')+'</b>');if(m.dias)q.push('<b>'+pl(m.dias,'cierre de día','cierres de día')+'</b>');if(m.nombre)q.push('tu nombre');
-    $('importMsg').innerHTML='<div class="confirm"><span>Copia del '+fecha+'. Se añade: '+q.join(', ')+'. Lo que ya está anotado no se cambia.</span><div class="row2"><button class="btn primary small" id="doImport">Recuperar</button><button class="btn ghost small" id="cancelImport">Cancelar</button></div></div>';
-  }catch(e){$('importMsg').innerHTML='<p class="status" style="color:var(--danger)">Eso no es una copia de Comida App. Usa el archivo .json o el texto completo que guardaste desde «Guardar copia».</p>';}
+    $('importMsg').innerHTML='<div class="confirm"><span>Copia '+fecha+'. Se añade: '+q.join(', ')+'. Lo que ya está anotado no se cambia.'+noLeidos+'</span><div class="row2"><button class="btn primary small" id="doImport">Recuperar</button><button class="btn ghost small" id="cancelImport">Cancelar</button></div></div>';
+  }catch(e){$('importMsg').innerHTML='<p class="status" style="color:var(--danger)">Eso no es una copia de Comida Consciente. Usa el archivo .json o el texto completo que guardaste desde «Guardar copia».</p>';}
 }
 /* Fusionar (decidido el 24-09-2026): lo que no está se añade y lo que está en blanco se
    rellena; lo que ya tiene datos en este móvil no se toca. Se prepara sobre una copia de
@@ -1769,31 +1925,36 @@ function parseImport(text){
 const vacio=v=>v==null||v===''||(Array.isArray(v)&&!v.length);
 function rellenar(cur,inc){
   let n=0;
-  Object.keys(inc).forEach(k=>{if(k==='id'||k==='ejemplo')return;if(vacio(cur[k])&&!vacio(inc[k])){cur[k]=inc[k];n++;}});
+  Object.keys(inc).forEach(k=>{if(k==='id'||k==='ejemplo')return;if(vacio(Object.hasOwn(cur,k)?cur[k]:null)&&!vacio(inc[k])){cur[k]=inc[k];n++;}});
   if(cur.aguaTexto&&cur.agua!=null){delete cur.aguaTexto;}
   return n;
 }
+function quitarEjemplos(d){
+  Object.keys(d.ingestas).forEach(k=>{if(d.ingestas[k].ejemplo)delete d.ingestas[k];});
+  Object.keys(d.dias).forEach(k=>{if(d.dias[k].ejemplo)delete d.dias[k];});
+  d.ejemplos=false;
+}
 function mergeImport(o){
   const next=JSON.parse(JSON.stringify(data));
-  if(next.ejemplos){
-    Object.keys(next.ingestas).forEach(k=>{if(next.ingestas[k].ejemplo)delete next.ingestas[k];});
-    Object.keys(next.dias).forEach(k=>{if(next.dias[k].ejemplo)delete next.dias[k];});
-    next.ejemplos=false;
-  }
-  let nuevas=0,completadas=0,dias=0;
+  if(next.ejemplos)quitarEjemplos(next);
+  let nuevas=0,completadas=0,dias=0,malas=0;
   o.ingestas.forEach(x=>{
-    if(!x||!x.id||!x.fecha)return;
-    const inc=Object.assign(ingVacia(),x);delete inc.ejemplo;
-    const cur=next.ingestas[x.id];
-    if(!cur){next.ingestas[x.id]=inc;nuevas++;}
+    const inc=sanearIngesta(x);
+    if(!inc){malas++;return;}
+    if(inc.ejemplo)return;
+    const cur=Object.hasOwn(next.ingestas,inc.id)?next.ingestas[inc.id]:null;
+    if(!cur){next.ingestas[inc.id]=inc;nuevas++;}
     else if(rellenar(cur,inc))completadas++;
   });
-  Object.entries(o.dias||{}).forEach(([f,di])=>{
-    const inc=normDia(Object.assign({},di));delete inc.ejemplo;
-    if(!next.dias[f]){if(Object.keys(inc).length){next.dias[f]=inc;dias++;}}
+  Object.entries(esObj(o.dias)?o.dias:{}).forEach(([f,di])=>{
+    const inc=fechaValida(f)?sanearDia(di):null;
+    if(!inc){malas++;return;}
+    if(inc.ejemplo)return;
+    if(!Object.hasOwn(next.dias,f)){if(Object.keys(inc).length){next.dias[f]=inc;dias++;}}
     else if(rellenar(next.dias[f],inc))dias++;
   });
-  if(o.exportado&&(!next.ultimaCopia||o.exportado>next.ultimaCopia))next.ultimaCopia=o.exportado;
+  const exp=typeof o.exportado==='string'&&!isNaN(new Date(o.exportado))?new Date(o.exportado).toISOString():null;
+  if(exp&&(!next.ultimaCopia||exp>next.ultimaCopia))next.ultimaCopia=exp;
   /* Las etiquetas se rellenan solo si aquí la lista está vacía (rellenar): no se mezclan listas. */
   const par=p=>Array.isArray(p)&&p.length===2?p.map(String).sort():null;
   const vistas=new Set((next.etiquetasDistintas||[]).map(p=>JSON.stringify(par(p))));
@@ -1801,12 +1962,16 @@ function mergeImport(o){
   (Array.isArray(o.etiquetasDistintas)?o.etiquetasDistintas:[]).map(par).filter(Boolean).forEach(p=>{const k=JSON.stringify(p);if(!vistas.has(k)){vistas.add(k);next.etiquetasDistintas.push(p);}});
   const nom=o.perfil&&typeof o.perfil.nombre==='string'?o.perfil.nombre.trim().slice(0,30):'';
   const nombre=!perfil.nombre&&nom?nom:'';
-  return {next,nuevas,completadas,dias,nombre};
+  return {next,nuevas,completadas,dias,nombre,malas,exportado:exp};
 }
 function doImport(){
-  data=pendingImport.next;
+  if(refrescar())pendingImport=Object.assign(mergeImport(pendingImport.o),{o:pendingImport.o});
+  const antes=data;data=pendingImport.next;
+  /* Si la copia no cabe, no se cambia nada: lo de antes sigue guardado tal cual. */
+  if(!save()){data=antes;guardadoFalla=false;pendingImport=null;$('banner').innerHTML=bannerHtml();
+    $('importMsg').innerHTML='<div class="confirm" role="alert"><span>La copia no cabe en este móvil y no se ha recuperado nada. Tus datos siguen como estaban.</span></div>';return;}
   if(pendingImport.nombre){perfil.nombre=pendingImport.nombre;savePerfil();}
-  save();pendingImport=null;close();render();toast('Copia recuperada');
+  pendingImport=null;close();render();toast('Copia recuperada');
 }
 
 /* ---------- PIN (D14) ----------
@@ -1854,6 +2019,9 @@ const esperando=()=>bloqueada&&perfil.esperaHasta>Date.now();
 function bloquear(){
   if(!perfil.pin)return;
   bloqueada=true;document.body.classList.add('locked');document.body.classList.remove('veil');
+  /* SEG-20: con el PIN puesto, los registros no están en la página hasta desbloquear. La hoja
+     abierta (lo que se estaba escribiendo) se conserva, oculta, para no perderlo. */
+  $('top').innerHTML='';$('banner').innerHTML='';$('view').innerHTML='';
   const L=$('lock');L.hidden=false;
   L.innerHTML='<div class="pinbox"><div class="lk">'+ico('candado')+'</div><h1>'+(perfil.nombre?'Hola, '+esc(perfil.nombre):'Hola')+'</h1>'
     +(hayCrypto()?padHtml()+'<button class="pinlink" id="forgotBtn">¿Has olvidado el PIN?</button><div id="forgotBox"></div>'
@@ -1882,10 +2050,11 @@ function tickEspera(){
   paint();if(esperando())esperaTimer=setInterval(paint,1000);
 }
 function borrarTodo(){
-  [STORE,STORE+'-ui',STORE+'-perfil',STORE+'-fmt'].forEach(k=>{try{localStorage.removeItem(k);}catch(e){}});
+  [STORE,STORE+'-ui',STORE+'-perfil',STORE+'-fmt',STORE+'-roto'].forEach(k=>{try{localStorage.removeItem(k);}catch(e){}});
   location.reload();
 }
 document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='visible'&&ponerHoy()&&!bloqueada&&!$('overlay').innerHTML)render();
   if(!perfil.pin)return;
   if(document.visibilityState==='hidden'){
     salida=Date.now();
@@ -1932,7 +2101,7 @@ function finPin(msg){flujo=null;teclado=null;openMe();toast(msg);}
 /* "Guardar copia ahora" sin salir del flujo; si el móvil no deja descargar, la hoja de copia. */
 async function copiaDesdeAviso(){
   const dl=await getDownloader();
-  try{await dl.save({filename:'comida-app-copia-'+TODAY+'.json',data:backupJson()});data.ultimaCopia=new Date().toISOString();save();toast('Copia guardada');pasoPin('aviso');}
+  try{await dl.save({filename:'comida-consciente-copia-'+TODAY+'.json',data:backupJson()});refrescar();data.ultimaCopia=new Date().toISOString();save();toast('Copia guardada');pasoPin('aviso');}
   catch(e){if(e&&e.code==='declined')return;flujo=null;openBackup('guardar');}
 }
 
@@ -1952,6 +2121,12 @@ document.addEventListener('click',e=>{
   if(t.id==='pinCopia'){copiaDesdeAviso();return;}
   if(t.id==='pinActivar'){t.disabled=true;crearPin(flujo.first).then(pn=>{perfil.pin=pn;perfil.fallos=0;perfil.esperaHasta=0;savePerfil();finPin('PIN activado');});return;}
   if(t.id==='forgotBtn'){$('forgotBox').innerHTML='<div class="forgot"><span>Sin el PIN no se pueden ver los datos. Puedes borrar todo lo de este móvil y recuperar después tu última copia.</span><button class="btn danger" id="wipeBtn">Borrar todo y empezar</button></div>';return;}
+  if(t.id==='wipeMe'){
+    if(t.classList.contains('armed')){borrarTodo();return;}
+    t.classList.add('armed');t.textContent='¿Seguro? Pulsa otra vez';
+    t.insertAdjacentHTML('afterend','<p class="hint">Se borra todo lo de este móvil. Si quieres conservarlo, guarda antes una copia.</p><div class="row2"><button class="btn sec small" data-bk="guardar">Guardar copia</button></div>');
+    return;
+  }
   if(t.id==='wipeBtn'){if(t.classList.contains('armed'))borrarTodo();else{t.classList.add('armed');t.textContent='¿Seguro? Pulsa otra vez';}return;}
   if(t.dataset.sec){if(t.dataset.sec==='pat')pat.vista='';ui.sec=t.dataset.sec;if(ui.sec==='hoy')ui.cursor=ui.cursor||TODAY;saveUi();render();window.scrollTo(0,0);return;}
   if(t.dataset.wk){moverSemana(Number(t.dataset.wk));return;}
@@ -1981,12 +2156,13 @@ document.addEventListener('click',e=>{
   if(t.id==='showBackupText'){showBackupText();return;}
   if(t.id==='loadTxt'){const v=$('importTxt').value;if(!v.trim()){toast('Pega primero el texto de la copia');return;}parseImport(v);return;}
   if(t.id==='clearEx'){
-    if(t.dataset.armed){data={ingestas:{},dias:{},ejemplos:false,etiquetasDistintas:[],ultimaCopia:data.ultimaCopia||null};save();render();toast('Listo: empiezas en blanco');}
+    /* D17.11: quita solo los ejemplos; lo registrado de verdad se queda. */
+    if(t.dataset.armed){refrescar();quitarEjemplos(data);save();render();const n=Object.keys(data.ingestas).length;toastGuardado(n?'Ejemplos quitados. '+(n===1?'Tu registro se queda':'Tus '+n+' registros se quedan'):'Listo: empiezas en blanco');}
     else{t.dataset.armed='1';t.textContent='¿Seguro? Pulsa otra vez';}
     return;
   }
   if(t.id==='delBtn'){
-    if(t.classList.contains('armed')){delete data.ingestas[draft.id];save();close();render();toast('Registro borrado');}
+    if(t.classList.contains('armed')){refrescar();delete data.ingestas[draft.id];save();close();render();toastGuardado('Registro borrado');}
     else{t.classList.add('armed');t.textContent='Pulsa otra vez para borrar';}
     return;
   }
@@ -2018,12 +2194,12 @@ document.addEventListener('click',e=>{
   if(t.dataset.eren){etqUi={ren:t.dataset.eren};pintarEtqHoja();return;}
   if(t.dataset.efus){etqUi={fus:t.dataset.efus};pintarEtqHoja();return;}
   if(t.dataset.eborrar){
-    if(etqUi.borrar===t.dataset.eborrar){borrarEtq(t.dataset.eborrar);etqUi={};pintarEtqHoja();render();toast('Etiqueta borrada');}
+    if(etqUi.borrar===t.dataset.eborrar){borrarEtq(t.dataset.eborrar);etqUi={};pintarEtqHoja();render();toastGuardado('Etiqueta borrada');}
     else{etqUi.borrar=t.dataset.eborrar;pintarEtqHoja();}
     return;
   }
-  if(t.dataset.fusion){fusionarEtq(t.dataset.fusion,t.dataset.en);etqUi={};pintarEtqHoja();render();toast('Etiquetas fusionadas');return;}
-  if(t.dataset.distintas){data.etiquetasDistintas=(data.etiquetasDistintas||[]).concat([[t.dataset.distintas,t.dataset.y].sort()]);save();pintarEtqHoja();return;}
+  if(t.dataset.fusion){fusionarEtq(t.dataset.fusion,t.dataset.en);etqUi={};pintarEtqHoja();render();toastGuardado('Etiquetas fusionadas');return;}
+  if(t.dataset.distintas){refrescar();data.etiquetasDistintas=(data.etiquetasDistintas||[]).concat([[t.dataset.distintas,t.dataset.y].sort()]);save();pintarEtqHoja();return;}
   if(t.id==='renOk'){renGuardar();return;}
   if(t.id==='renNo'){etqUi={};pintarEtqHoja();return;}
   if(t.hasAttribute('data-close')){close();return;}
@@ -2052,6 +2228,9 @@ document.addEventListener('input',e=>{
   if(e.target.id==='f-ren'&&etqUi.renAviso){etqUi.renAviso='';$('renAviso').hidden=true;$('renOk').textContent='Guardar';return;}
   if(e.target.closest('#fIng'))resumenForm();
 });
+/* SEG-10: otra pestaña ha guardado. Sin nada a medias, se lee y se pinta; con una hoja abierta,
+   lo hace refrescar() al guardar. */
+window.addEventListener('storage',e=>{if(e.key!==STORE&&e.key!==null)return;if(!$('overlay').innerHTML&&!bloqueada&&refrescar())render();});
 /* Deslizar la tira de la semana cambia de semana. */
 let sw=null;
 document.addEventListener('touchstart',e=>{sw=e.target.closest('#week')?{x:e.touches[0].clientX,y:e.touches[0].clientY}:null;},{passive:true});
@@ -2084,7 +2263,7 @@ document.addEventListener('keydown',e=>{
   if(e.key==='Enter'&&e.target.id==='f-nombre'){e.preventDefault();e.target.blur();}
 });
 
-render();
-if(perfil.pin)bloquear();
+data=load();
+if(perfil.pin)bloquear();else render();
 })();
 </script>
